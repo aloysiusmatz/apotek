@@ -1,6 +1,9 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\DeveloperController;
+use App\Http\Controllers\CompaniesController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +23,10 @@ Route::get('/', function () {
 Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
     return view('dashboard');
 })->name('dashboard');
+
+Route::get('/home', [HomeController::class, 'index']);
+Route::get('/developer', [DeveloperController::class, 'index']);
+Route::get('/developer/companies', [CompaniesController::class, 'index']);
+// Route::resource('developer/companies', CompaniesController::class);
+// Route::get('/developer/companies', \App\Http\Livewire\CompaniesView::class);
+

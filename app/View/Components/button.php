@@ -19,7 +19,7 @@ class button extends Component
     public function __construct($type)
     {
         
-        $myclass = "px-3 py-2 rounded-md text-white font-semibold text-sm font-medium";
+        $myclass = "px-3 py-2 rounded-md text-white font-semibold text-xs font-bold";
         
         if ($type == "create"){
             $title = "Create";

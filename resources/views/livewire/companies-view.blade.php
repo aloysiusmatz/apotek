@@ -18,23 +18,28 @@
     <x-content>
         <div class='flex grid grid-cols-6'>
             <div class="w-full col-span-4 ">
-                <div class="bg-white shadow-md rounded-md overflow-hidden">
+            
+                @livewire('companies-table')
 
-                    @livewire('companies-table')
-
-                </div>
             </div>
-            
-            
 
             <div class="col-span-2 ml-2">
+    
                 @if ($mysubmit=="updateCompanies")
                 <div>
                     <x-button-topcreate wire:click="changeToCreate">Create</x-button-topcreate>
                 </div>
                 @endif
 
-                <x-form action="/developer/companies" mysubmit="{{ $mysubmit }}" bttype="submit" title="{{ $form_title }}" >
+                
+                @if (session()->has('message'))
+                    <div class="mb-2 alert alert-success bg-green-500 px-2 py-3 text-white rounded-md   ">
+                        {{ session('message') }}
+                    </div>
+                @endif
+                
+
+                <x-form action="" mysubmit="{{ $mysubmit }}" bttype="submit" title="{{ $form_title }}" >
                     
                     <x-input myclass="" type="text" name="company_code" wireprop="wire:model.lazy=company_code">
                         Company Code
@@ -60,11 +65,10 @@
                         Alt. Phone
                     </x-input>
                     
+                    <x-checkbox-active wireprop="wire:model=active">Active</x-checkbox-active>
 
-                    {{-- <x-slot name="button_type">{{ $form_button }}</x-slot> --}}
                 </x-form>
 
-              
             </div>
         
         

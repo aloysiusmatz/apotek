@@ -1,7 +1,7 @@
 @extends('master.master')
 
 @section('content')
-    dashboard
+    @livewire('items-view')
 @endsection
     
  

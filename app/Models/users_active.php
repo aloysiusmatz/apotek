@@ -5,11 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class companies extends Model
+class users_active extends Model
 {
     use HasFactory;
+    protected $table = "users_actives";
 
-    public function companies_active(){
-        return $this->hasOne('App\Models\companies_active', 'id');
-    }
 }

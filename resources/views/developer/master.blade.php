@@ -7,8 +7,8 @@
         {{-- END SIDEBAR --}}
 
         {{-- PAGES --}}
-        {{-- @yield('content') --}}
-        @livewire('companies-view')
+        @yield('content')
+        {{-- @livewire('companies-view') --}}
         {{-- END PAGES --}}
     </div>
 @endsection

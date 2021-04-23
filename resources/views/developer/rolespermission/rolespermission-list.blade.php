@@ -1,5 +1,5 @@
 @extends('developer.master')
 
 @section('content')
-    @livewire("companies-view")
+    @livewire("rolespermission-view")
 @endsection

@@ -19,10 +19,10 @@
             
         </div>
 
-        <div class="px-4 py-2 bg-gray-50 text-right sm:px-6">
-
+        <div class="px-4 py-2 bg-gray-100 text-right sm:px-6">
+            
             <x-button type="{{ $bttype }}"></x-button>
-                    
+
         </div>
     </div>
 </form>       

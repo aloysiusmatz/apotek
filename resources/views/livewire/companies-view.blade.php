@@ -41,27 +41,27 @@
 
                 <x-form action="" mysubmit="{{ $mysubmit }}" bttype="submit" title="{{ $form_title }}" >
                     
-                    <x-input myclass="" type="text" name="company_code" wireprop="wire:model.lazy=company_code">
+                    <x-input myclass="" type="text" name="company_code" wireprop="wire:model.lazy=company_code" disb="">
                         Company Code
                     </x-input>
             
-                    <x-input myclass="" type="text" name="company_desc" wireprop="wire:model.lazy=company_desc">
+                    <x-input myclass="" type="text" name="company_desc" wireprop="wire:model.lazy=company_desc" disb="">
                         Company Description
                     </x-input>
             
-                    <x-input myclass="" type="text" name="address" wireprop="wire:model.lazy=address">
+                    <x-input myclass="" type="text" name="address" wireprop="wire:model.lazy=address" disb="">
                         Address
                     </x-input>
             
-                    <x-input myclass="" type="text" name="npwp" wireprop="wire:model.lazy=npwp">
+                    <x-input myclass="" type="text" name="npwp" wireprop="wire:model.lazy=npwp" disb="">
                         NPWP
                     </x-input>
             
-                    <x-input myclass="" type="text" name="phone" wireprop="wire:model.lazy=phone">
+                    <x-input myclass="" type="text" name="phone" wireprop="wire:model.lazy=phone" disb="">
                         Phone
                     </x-input>
             
-                    <x-input myclass="" type="text" name="altphone" wireprop="wire:model.lazy=altphone">
+                    <x-input myclass="" type="text" name="altphone" wireprop="wire:model.lazy=altphone" disb="">
                         Alt. Phone
                     </x-input>
                     

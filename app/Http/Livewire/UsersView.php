@@ -8,6 +8,8 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Models\User;
 use App\Models\users_active;
+use App\Models\companies;
+use App\Models\user_has_companies;
 
 class UsersView extends Component
 {
@@ -26,26 +28,36 @@ class UsersView extends Component
     public $form_title3 = 'Assign Permission';
     public $mysubmit3 = "createData3";
 
-    public $rolesdatas;
-    public $permissiondatas;
+    public $form_title4 = 'Assign Company';
+    public $mysubmit4 = "createData4";
+
+    public $rolesdatas=[];
+    public $permissiondatas=[];
+    public $companydatas=[];
+
     public $selection_role;
     public $selection_permission;
+    public $selection_company;
 
     public $user_selected=0;
 
     protected $listeners = ['editDataRow' => 'dataEdit',
-                            'selectDataRow' => 'setDataSelected'];
+                            'selectDataRow' => 'setDataSelected',
+                            'clearView' => 'changeToCreate'];
 
     public function mount(){
         
         $this->rolesdatas = Role::all();
         $this->permissiondatas = Permission::all();
+        $this->companydatas = companies::all();
 
         $rolesdatas = $this->rolesdatas;
         $permissiondatas = $this->permissiondatas;
+        $companydatas = $this->companydatas;
 
         $this->selection_role = $rolesdatas->first()->id;
         $this->selection_permission = $permissiondatas->first()->id;
+        $this->selection_company = $companydatas->first()->id;
         // dd( $this->roledatas);
     }
 
@@ -54,6 +66,7 @@ class UsersView extends Component
         
         $this->roledatas = Role::all();
         $this->permissiondatas = Permission::all();
+        $this->companydatas = companies::all();
 
         return view('livewire.users-view');
     }
@@ -157,6 +170,21 @@ class UsersView extends Component
             session()->flash('message', 'User '.$user->email.' assigned to permission '. $permission->name);
 
             $this->emit('dataChanged3');
+        }
+    }
+
+    public function createData4(){
+        if ($this->user_selected==0) {
+            session()->flash('message', 'Select a user first');
+        }else{
+            $insert = new user_has_companies;
+            $insert->user_id = $this->user_selected;
+            $insert->company_id = $this->selection_company;
+            $insert->save();
+
+            session()->flash('message', 'User assigned to a company');
+
+            $this->emit('dataChanged4');
         }
     }
 }

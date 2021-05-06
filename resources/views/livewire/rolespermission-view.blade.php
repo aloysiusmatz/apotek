@@ -55,7 +55,7 @@
 
                     <x-form action="" mysubmit="{{ $mysubmit1 }}" bttype="submit" title="{{ $form_title1 }}" >
                         
-                        <x-input myclass="" type="text" name="name" wireprop="wire:model.lazy=rolename">
+                        <x-input myclass="" type="text" name="name" wireprop="wire:model.lazy=rolename" disb="">
                             Role Name
                         </x-input>
                     
@@ -74,7 +74,7 @@
 
                     <x-form action="" mysubmit="{{ $mysubmit2 }}" bttype="submit" title="{{ $form_title2 }}" >
                         
-                        <x-input myclass="" type="text" name="name" wireprop="wire:model.lazy=permissionname">
+                        <x-input myclass="" type="text" name="name" wireprop="wire:model.lazy=permissionname" disb="">
                             Permission Name
                         </x-input>
                                             

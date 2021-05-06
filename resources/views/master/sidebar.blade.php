@@ -60,6 +60,10 @@
             </div>
 
             <div class="mt-3 mx-4">
+                @role('Developer')
+                <a class="text-sm block" href="{{ route('developer') }}">Developer Menu</a>
+                @endrole
+                
                 <a class="text-sm" href="{{ route('profile.show') }}">Manage Account</a>
             
                 <form method="POST" action="{{ route('logout') }}">

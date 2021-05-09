@@ -55,9 +55,16 @@ class UsersView extends Component
         $permissiondatas = $this->permissiondatas;
         $companydatas = $this->companydatas;
 
-        $this->selection_role = $rolesdatas->first()->id;
-        $this->selection_permission = $permissiondatas->first()->id;
-        $this->selection_company = $companydatas->first()->id;
+        if($rolesdatas->count() >= 1){
+            $this->selection_role = $rolesdatas->first()->id;   
+        }
+        if($permissiondatas->count() >= 1){
+            $this->selection_permission = $permissiondatas->first()->id;
+        }
+        if($companydatas->count() >= 1){
+            $this->selection_company = $companydatas->first()->id;
+        }
+        
         // dd( $this->roledatas);
     }
 
@@ -152,7 +159,7 @@ class UsersView extends Component
 
             $user = User::find($this->user_selected);
             $role = Role::find($this->selection_role);
-
+            
             $user->assignRole($role);
             session()->flash('message', 'User '.$user->email.' assigned to role '. $role->name);
 

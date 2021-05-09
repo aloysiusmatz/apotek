@@ -15,12 +15,12 @@ class CreateCompaniesTable extends Migration
     {
         Schema::create('companies', function (Blueprint $table) {
             $table->id();
-            $table->text('company_code')->unique();
+            $table->text('company_code');
             $table->text('company_desc');
-            $table->text('address');
-            $table->text('npwp');
-            $table->text('phone');
-            $table->text('altphone');
+            $table->text('address')->nullable();
+            $table->text('npwp')->nullable();
+            $table->text('phone')->nullable();
+            $table->text('altphone')->nullable();
             $table->timestamps();
         });
     }

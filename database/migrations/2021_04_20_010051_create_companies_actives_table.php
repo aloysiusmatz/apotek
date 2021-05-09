@@ -15,7 +15,7 @@ class CreateCompaniesActivesTable extends Migration
     {
         Schema::create('companies_actives', function (Blueprint $table) {
             $table->id();
-            $table->text('company_code')->unique();
+            $table->text('company_code');
             $table->boolean('active');
             $table->timestamps();
         });

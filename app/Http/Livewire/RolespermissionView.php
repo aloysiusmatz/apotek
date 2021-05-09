@@ -42,8 +42,13 @@ class RolespermissionView extends Component
         $this->rolesdatas = Role::all();
         $this->permissiondatas = Permission::all();
 
-        $this->selection_role = $this->rolesdatas->first()->id;
-        $this->selection_permission = $this->permissiondatas->first()->id;
+        if($this->rolesdatas->count()>=1){
+            $this->selection_role = $this->rolesdatas->first()->id;
+        }
+        if($this->permissiondatas->count()>=1){
+            $this->selection_permission = $this->permissiondatas->first()->id;
+        }
+        
     }
 
     public function render()
@@ -60,7 +65,7 @@ class RolespermissionView extends Component
 
     public function createData1(){
     
-        $role = Role::create(['name' => $this->rolename]);
+        $role = Role::create(['name' => $this->rolename, "guard_name" => 'web']);
 
         $this->initField1();
 
@@ -112,7 +117,7 @@ class RolespermissionView extends Component
 
     public function createData2(){
     
-        $role = Permission::create(['name' => $this->permissionname]);
+        $role = Permission::create(['name' => $this->permissionname ,"guard_name" => 'web']);
 
         $this->initField2();
 

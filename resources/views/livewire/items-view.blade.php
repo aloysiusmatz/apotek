@@ -66,6 +66,16 @@
                             Selling Price
                         </x-input>
 
+                        <div class="col-span-6">
+                            <label for="selection_categories" class="block text-sm font-medium text-gray-700">Category</label>
+                            
+                            <x-select wireprop="wire:model.defer=selection_category">
+                                @foreach ($categoriesdatas as $categoriesdata )
+                                    <option value="{{ $categoriesdata->id }}">{{ $categoriesdata->name }}</option>
+                                @endforeach
+                            </x-select>
+                        </div>
+
                         <x-checkbox-active wireprop="wire:model.lazy=item_lock">
                             Lock
                         </x-checkbox-active>

@@ -3,15 +3,11 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\Models\m_categories;
+use App\Models\m_locations;
 use Illuminate\Support\Facades\DB;
 
-class CategoriesTable extends Component
+class LocationsTable extends Component
 {
-    // public $data_array;
-    // public $data_links;
-    // public $current_page;
-    // public $total_pages;
     public $datas;
     public $search_data='';
     public $sortby=0;
@@ -40,14 +36,14 @@ class CategoriesTable extends Component
         }
 
         if ($this->search_data == "") {
-            $datas = DB::table('m_categories')
+            $datas = DB::table('m_locations')
                         ->where('company_id', session()->get('company_id'))
                         ->orderBy($sort_column, $sort_query)
                         ->get();
                         
         }else {
             $keywords = "%".$this->search_data."%";
-            $datas = DB::table('m_categories')
+            $datas = DB::table('m_locations')
                         ->where('company_id', session()->get('company_id'))
                         ->where('name', 'like', $keywords)
                         ->orderBy($sort_column, $sort_query)
@@ -69,7 +65,7 @@ class CategoriesTable extends Component
                 <table class="min-w-max w-full table-auto">
                     <thead>
                         <tr class="bg-gray-200 text-gray-600 uppercase text-xs leading-normal">
-                            <th class="py-2 px-6 text-center cursor-pointer" wire:click="sortBy(1)">Category</th>
+                            <th class="py-2 px-6 text-center cursor-pointer" wire:click="sortBy(1)">Location</th>
                             <th class="py-2 px-6 text-center cursor-pointer">Actions</th>
                         </tr>
                     </thead>
@@ -115,7 +111,7 @@ class CategoriesTable extends Component
 
     public function deleteDataRow($id){
         
-        $data = m_categories::destroy($id);
+        $data = m_locations::destroy($id);
         
         $this->emitSelf('dataChanged1');
         

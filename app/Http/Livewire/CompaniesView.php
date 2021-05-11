@@ -27,13 +27,13 @@ class CompaniesView extends Component
 
     public function render()
     {
-
-        $this->company_code = strtoupper($this->company_code);
+        $this->formatField();
 
         return view('livewire.companies-view');
     }
 
     public function initField(){
+        $this->companyid = 0;
         $this->company_code = "";
         $this->company_desc = "";
         $this->address = "";
@@ -43,9 +43,12 @@ class CompaniesView extends Component
         $this->active = "1";
     }
 
-    public function createCompanies(){
-        
+    public function formatField(){
         $this->company_code = strtoupper($this->company_code);
+    }
+
+    public function createCompanies(){
+        $this->formatField();
         
         $companies = new companies;
         $companies->company_code = $this->company_code;
@@ -71,6 +74,13 @@ class CompaniesView extends Component
     }
 
     public function updateCompanies(){
+        $this->formatField();
+
+        if ($this->companyid == 0) {
+            session()->flash('message', 'Please select a data to update');
+            return;
+        }
+
         $companies = companies::find($this->companyid);
         $companies->company_code = $this->company_code;
         $companies->company_desc = $this->company_desc;
@@ -108,6 +118,7 @@ class CompaniesView extends Component
         $this->mysubmit = "updateCompanies";
         $this->companyid = $companyid;
      
+        $this->formatField();
         $this->render();
     }
 

@@ -61,6 +61,7 @@ class RolespermissionView extends Component
 
     public function initField1(){
         $this->rolename="";
+        $this->dataid1 = 0;
     }
 
     public function createData1(){
@@ -75,6 +76,11 @@ class RolespermissionView extends Component
     }
 
     public function updateData1(){
+        if ($this->dataid1 == 0) {
+            session()->flash('message', 'Please select a data to update');
+            return;
+        }
+
         $datas = Role::find($this->dataid1);
 
         $datas->name = $this->rolename;
@@ -113,6 +119,7 @@ class RolespermissionView extends Component
 
     public function initField2(){
         $this->permissionname="";
+        $this->dataid2 = 0;
     }
 
     public function createData2(){
@@ -127,6 +134,11 @@ class RolespermissionView extends Component
     }
 
     public function updateData2(){
+        if ($this->dataid2 == 0) {
+            session()->flash('message', 'Please select a data to update');
+            return;
+        }
+
         $datas = Permission::find($this->dataid2);
 
         $datas->name = $this->permissionname;

@@ -40,7 +40,7 @@ class ItemsView extends Component
             $this->selection_category = $this->categoriesdatas->first()->id;
         }
 
-        $this->item_name =  strtoupper($this->item_name);
+        $this->formatField1();
 
         return view('livewire.items-view');
     }
@@ -52,10 +52,16 @@ class ItemsView extends Component
         $this->selling_price = "";
         $this->selection_category = 0;
         $this->item_lock = 0;
+        $this->dataid1 = 0;
+    }
+
+    public function formatField1(){
+        $this->item_name =  strtoupper($this->item_name);
     }
 
     public function createData1(){
-        
+        $this->formatField1();
+
         $m_items = new m_items;
         $m_items->company_id = session()->get('company_id');
         $m_items->category_id = $this->selection_category;
@@ -72,6 +78,13 @@ class ItemsView extends Component
     }
 
     public function updateData1(){
+        $this->formatField1();
+
+        if ($this->dataid1 == 0) {
+            session()->flash('message', 'Please select a data to update');
+            return;
+        }
+
         $datas = m_items::find($this->dataid1);
 
         $datas->category_id = $this->selection_category;
@@ -89,6 +102,7 @@ class ItemsView extends Component
     }
 
     public function dataEdit1($dataid1){
+
         $edit_data = m_items::find($dataid1);
 
         $this->selection_category = $edit_data->category_id;
@@ -102,7 +116,8 @@ class ItemsView extends Component
         $this->form_title1 = "Update Items";
         $this->mysubmit1 = "updateData1";
         $this->dataid1 = $dataid1;
-     
+
+        $this->formatField1();
         $this->render();
     }
 

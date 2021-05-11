@@ -83,6 +83,7 @@ class UsersView extends Component
         $this->name = "";
         $this->password = "";
         $this->active = "1";
+        $this->dataid = 0;
     }
 
 
@@ -109,6 +110,11 @@ class UsersView extends Component
     }
 
     public function updateData(){
+        if ($this->dataid == 0) {
+            session()->flash('message', 'Please select a data to update');
+            return;
+        }
+
         $datas = User::find($this->dataid);
         $datas->email = $this->email;
         $datas->name = $this->name;

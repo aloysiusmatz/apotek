@@ -3,17 +3,18 @@
 namespace App\Http\Livewire;
 
 use Livewire\Component;
-use App\Models\m_categories;
+use App\Models\m_locations;
 
-class CategoriesView extends Component
+class LocationsView extends Component
 {
+
     public $datas1;
 
-    public $form_title1 = 'Create Category';
+    public $form_title1 = 'Create Location';
     public $mysubmit1 = "createData1";
     public $dataid1;
 
-    public $category_name;
+    public $location_name;
 
     protected $listeners = ['editDataRow1' => 'dataEdit1'];
 
@@ -26,25 +27,25 @@ class CategoriesView extends Component
     public function render()
     {
         $this->formatField1();
-        
-        return view('livewire.categories-view');
+
+        return view('livewire.locations-view');
     }
 
     public function initField1(){
-        $this->category_name = "";
-        $this->dataid1 = 0;
+        $this->location_name = "";
+        $this->dataid = 0;
     }
 
     public function formatField1(){
-        $this->category_name = strtoupper($this->category_name);
+        $this->location_name = strtoupper($this->location_name);
     }
 
     public function createData1(){
         $this->formatField1();
 
-        $datas1 = new m_categories;
+        $datas1 = new m_locations;
         $datas1->company_id = session()->get('company_id');
-        $datas1->name = $this->category_name;
+        $datas1->name = $this->location_name;
         $datas1->save();
 
         $this->emit('dataChanged1');
@@ -61,9 +62,9 @@ class CategoriesView extends Component
             return;
         }
 
-        $datas1 = m_categories::find($this->dataid1);
+        $datas1 = m_locations::find($this->dataid1);
 
-        $datas1->name = $this->category_name;
+        $datas1->name = $this->location_name;
         $datas1->save();
        
         $this->initField1();
@@ -74,11 +75,12 @@ class CategoriesView extends Component
     }
 
     public function dataEdit1($dataid1){
-        $edit_data = m_categories::find($dataid1);
 
-        $this->category_name = $edit_data->name;
+        $edit_data = m_locations::find($dataid1);
+
+        $this->location_name = $edit_data->name;
         
-        $this->form_title1 = "Update Category";
+        $this->form_title1 = "Update Location";
         $this->mysubmit1 = "updateData1";
         $this->dataid1 = $dataid1;
      
@@ -90,7 +92,7 @@ class CategoriesView extends Component
         
         $this->initField1();
 
-        $this->form_title1 = "Create Category";
+        $this->form_title1 = "Create Location";
         $this->mysubmit1 = "createData1";
     }
 

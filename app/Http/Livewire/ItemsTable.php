@@ -120,7 +120,7 @@ class ItemsTable extends Component
                
                     <tbody class="text-gray-600 text-sm font-light">
                             @foreach ($data_array as $data )
-                                <tr class="border-b border-gray-200 hover:bg-gray-100" ">
+                                <tr class="border-b border-gray-200 hover:bg-gray-100">
                                     <td class="py-2 px-6 text-center whitespace-nowrap">
                                         {{ $data->id }}
                                     </td>

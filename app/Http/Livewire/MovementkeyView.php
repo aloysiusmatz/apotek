@@ -18,7 +18,8 @@ class MovementkeyView extends Component
     public $selection_company='';
     public $trans_name='';
     public $active=1;
-    public $selection_behaviour='COGS';
+    public $selection_behaviour='GR';
+    public $selection_type='INIT';
 
     protected $listeners = ['editDataRow1' => 'dataEdit1'];
 
@@ -45,7 +46,8 @@ class MovementkeyView extends Component
     public function initField1(){
         $this->trans_name = '';
         $this->active = 1;
-        $this->selection_behaviour = 'COGS';
+        $this->selection_behaviour = 'GR';
+        $this->selection_type = 'INIT';
         $this->dataid1 = 0;
     }
 
@@ -60,6 +62,7 @@ class MovementkeyView extends Component
         $datas1->company_id = $this->selection_company;
         $datas1->name = $this->trans_name;
         $datas1->active = $this->active;
+        $datas1->type = $this->selection_type;
         $datas1->behaviour = $this->selection_behaviour;
         $datas1->save();
 
@@ -82,6 +85,7 @@ class MovementkeyView extends Component
         $datas->company_id = $this->selection_company;
         $datas->name = $this->trans_name;
         $datas->active = $this->active;
+        $datas->type = $this->selection_type;
         $datas->behaviour = $this->selection_behaviour;
         $datas->save();
        
@@ -99,6 +103,7 @@ class MovementkeyView extends Component
         $this->selection_company = $edit_data->company_id;
         $this->trans_name = $edit_data->name;
         $this->active = $edit_data->active;
+        $this->selection_type = $edit_data->type;
         $this->selection_behaviour = $edit_data->behaviour;
         
         $this->form_title1 = "Update Movement Key";

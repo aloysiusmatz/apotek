@@ -65,13 +65,28 @@
                         </div>
 
                         <div class="col-span-6">
+                            <label for="selection_type" class="block text-sm font-medium text-gray-700">Type</label>
+                            
+                            <x-select wireprop="wire:model.defer=selection_type">
+                                
+                                <option value="INIT">Init</option>
+                                <option value="PURC">Purchase</option>
+                                <option value="OWV">Others with Value</option>
+                                <option value="OWOV">Others without Value</option>
+                                <option value="TRANS">Transfer</option>
+                                <option value="SELL">Sell</option>
+                                
+                            </x-select>
+                        </div>
+
+                        <div class="col-span-6">
                             <label for="selection_behaviour" class="block text-sm font-medium text-gray-700">Behaviour</label>
                             
                             <x-select wireprop="wire:model.defer=selection_behaviour">
                                 
-                                <option value="COGS">COGS</option>
-                                <option value="OWV">Others with Value</option>
-                                <option value="SELL">Sell</option>
+                                <option value="GR">GR</option>
+                                <option value="GI">GI</option>
+                                <option value="TRANS">TRANS</option>
                                 
                             </x-select>
                         </div>

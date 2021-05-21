@@ -29,20 +29,24 @@ class MovementkeyTable extends Component
             $sort_query = "desc";
         }
         
-        $sort_column="companies.company_code";
+        $sort_column="movement_keys.id";
 
         if ($this->sortby == 1) {
-            $sort_column = 'companies.company_code';
+            $sort_column = 'movement_keys.id';
         }elseif ($this->sortby == 2) {
-            $sort_column = 'movement_keys.name';
+            $sort_column = 'companies.company_code';
         }elseif ($this->sortby == 3) {
+            $sort_column = 'movement_keys.name';
+        }elseif ($this->sortby == 4) {
+            $sort_column = 'movement_keys.type';
+        }elseif ($this->sortby == 5) {
             $sort_column = 'movement_keys.behaviour';
         }
 
         if ($this->search_data == "") {
             $datas = DB::table('movement_keys')
                         ->join('companies', 'movement_keys.company_id', '=', 'companies.id')
-                        ->select('movement_keys.id as move_id', 'movement_keys.company_id', 'companies.company_code', 'movement_keys.name', 'movement_keys.behaviour', 'movement_keys.active')
+                        ->select('movement_keys.id as move_id', 'movement_keys.company_id', 'companies.company_code', 'movement_keys.name', 'movement_keys.type','movement_keys.behaviour', 'movement_keys.active')
                         ->orderBy($sort_column, $sort_query)
                         ->get();
                         
@@ -50,7 +54,7 @@ class MovementkeyTable extends Component
             $keywords = "%".$this->search_data."%";
             $datas = DB::table('movement_keys')
                         ->join('companies', 'movement_keys.company_id', '=', 'companies.id')
-                        ->select('movement_keys.id as move_id', 'movement_keys.company_id', 'companies.company_code', 'movement_keys.name', 'movement_keys.behaviour', 'movement_keys.active')
+                        ->select('movement_keys.id as move_id', 'movement_keys.company_id', 'companies.company_code', 'movement_keys.name', 'movement_keys.type', 'movement_keys.behaviour', 'movement_keys.active')
                         ->where('movement_keys.name', 'like', $keywords)
                         ->orWhere('companies.company_code', 'like', $keywords)
                         ->orderBy($sort_column, $sort_query)
@@ -72,9 +76,11 @@ class MovementkeyTable extends Component
                 <table class="min-w-max w-full table-auto">
                     <thead>
                         <tr class="bg-gray-200 text-gray-600 uppercase text-xs leading-normal">
-                            <th class="py-2 px-6 text-center cursor-pointer" wire:click="sortBy(1)">Companies</th>
-                            <th class="py-2 px-6 text-center cursor-pointer" wire:click="sortBy(2)">Movement Keys</th>
-                            <th class="py-2 px-6 text-center cursor-pointer" wire:click="sortBy(3)">Behaviour</th>
+                            <th class="py-2 px-6 text-center cursor-pointer" wire:click="sortBy(1)">ID</th>
+                            <th class="py-2 px-6 text-center cursor-pointer" wire:click="sortBy(2)">Companies</th>
+                            <th class="py-2 px-6 text-center cursor-pointer" wire:click="sortBy(3)">Movement Keys</th>
+                            <th class="py-2 px-6 text-center cursor-pointer" wire:click="sortBy(4)">Type</th>
+                            <th class="py-2 px-6 text-center cursor-pointer" wire:click="sortBy(5)">Behaviour</th>
                             <th class="py-2 px-6 text-center cursor-pointer" >Status</th>
                             <th class="py-2 px-6 text-center cursor-pointer">Actions</th>
                         </tr>
@@ -84,10 +90,16 @@ class MovementkeyTable extends Component
                             @foreach ($datas as $data )
                                 <tr class="border-b border-gray-200 hover:bg-gray-100" ">
                                     <td class="py-2 px-6 text-center whitespace-nowrap">
+                                        {{ $data->move_id }}
+                                    </td>
+                                    <td class="py-2 px-6 text-center whitespace-nowrap">
                                         {{ $data->company_code }}
                                     </td>
                                     <td class="py-2 px-6 text-center whitespace-nowrap">
                                         {{ $data->name }}
+                                    </td>
+                                    <td class="py-2 px-6 text-center whitespace-nowrap">
+                                        {{ $data->type }}
                                     </td>
                                     <td class="py-2 px-6 text-center whitespace-nowrap">
                                         {{ $data->behaviour }}

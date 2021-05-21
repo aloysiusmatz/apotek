@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMovementKeysTable extends Migration
+class CreateTItmoveHTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,19 +13,17 @@ class CreateMovementKeysTable extends Migration
      */
     public function up()
     {
-        Schema::create('movement_keys', function (Blueprint $table) {
+        Schema::create('t_itmove_h', function (Blueprint $table) {
             $table->id();
+            $table->date('posting_date');
+            $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('company_id');
-            $table->string('name');
-            $table->boolean('active');
-            $table->string('type');
-            $table->string('behaviour');
+            $table->unsignedBigInteger('movement_id');
+            $table->unsignedBigInteger('cancel_id');
+            $table->boolean('cancelled');
             $table->timestamps();
 
-            $table->foreign('company_id')
-                ->references('id')
-                ->on('companies')
-                ->onDelete('cascade');
+            
         });
     }
 
@@ -36,6 +34,6 @@ class CreateMovementKeysTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('movement_keys');
+        Schema::dropIfExists('t_itmove_h');
     }
 }

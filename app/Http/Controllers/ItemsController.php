@@ -9,8 +9,8 @@ class ItemsController extends Controller
 {
     use GeneralFunctions;
     
-    public function index(Request $request){
-        if ($this->checkCompanySession($request)==false){return redirect(route('setcompany'));}
+    public function index(){
+        if ($this->checkCompanySession()==false){return redirect(route('setcompany'));}
 
         return view('pages.items.index');
     }

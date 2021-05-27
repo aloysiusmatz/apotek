@@ -19,8 +19,9 @@ class CreateTItmoveHTable extends Migration
             $table->unsignedBigInteger('user_id');
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('movement_id');
-            $table->unsignedBigInteger('cancel_id');
-            $table->boolean('cancelled');
+            $table->unsignedBigInteger('cancel_id')->nullable();
+            $table->boolean('cancelled')->nullable();
+            $table->string('desc')->nullable();
             $table->timestamps();
 
             

@@ -47,7 +47,7 @@
                     </div>
                     
                     <div class="mt-1">
-                        <x-input myclass="" type="text" name="decs" wireprop="wire:model.lazy=decs" disb="">
+                        <x-input myclass="" type="text" name="desc" wireprop="wire:model.lazy=desc" disb="">
                             Description
                         </x-input>
                     </div>
@@ -127,9 +127,9 @@
                                 <label for="from_location" class="block text-sm font-medium text-gray-700">From Location</label>
                                 
                                 <x-select wireprop="wire:model.defer=from_location">
-                                    {{-- @foreach ($selection_movkeys as $selection_movkey )
-                                        <option value="{{ $selection_movkey->id }}">{{ $selection_movkey->name }}</option>
-                                    @endforeach --}}
+                                    {@foreach ($selection_to_locations as $selection_to_location )
+                                        <option value="{{ $selection_to_location->id }}">{{ $selection_to_location->name }}</option>
+                                    @endforeach
                                 </x-select>
                             </div>
                             @endif
@@ -145,7 +145,8 @@
                                 </x-select>
                             </div>
                             @else
-                            <div class="w-1/2 pr-2">
+                            
+                            <div class="w-1/2 pr-2">{{ $to_location.'a' }}
                                 <label for="to_location" class="block text-sm font-medium text-gray-700">Location</label>
                                 
                                 <x-select wireprop="wire:model.defer=to_location">
@@ -194,8 +195,22 @@
             </div>
             
             <div class="col-span-6 ml-2">
+                @if (count($error_list) > 0 )
+                    <div class="bg-white rounded-md p-2 shadow-md ">
+                        <p class="text-gray-600">Error:</p>
+                        @foreach ($error_list as $error)
+                            <p class="text-red-500 text-sm">{{ $error['message'] }}</p>
+                        @endforeach
+                    </div>
+                @endif
+
                 {{-- SEARCH ITEMS --}}
+                @if (count($error_list) > 0 )
+                <div class="mt-2 bg-white rounded-md p-2 shadow-md ">
+                @else
                 <div class="bg-white rounded-md p-2 shadow-md ">
+                @endif
+                
                     <div class="flex justify-between">
                         <div class="w-full">
                             <div class="relative">

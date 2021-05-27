@@ -14,6 +14,7 @@ class CreateTInvstockTable extends Migration
     public function up()
     {
         Schema::create('t_invstock', function (Blueprint $table) {
+            $table->id();
             $table->unsignedBigInteger('item_id');
             $table->smallInteger('period');
             $table->year('year');

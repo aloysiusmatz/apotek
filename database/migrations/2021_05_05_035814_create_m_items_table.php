@@ -21,6 +21,7 @@ class CreateMItemsTable extends Migration
             $table->text('desc')->nullable();
             $table->double('selling_price', 15, 2)->nullable();
             $table->boolean('lock')->nullable();
+            $table->string('batch_as');
             $table->timestamps();
 
             $table->foreign('company_id')

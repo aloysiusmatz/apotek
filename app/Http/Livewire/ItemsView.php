@@ -21,6 +21,7 @@ class ItemsView extends Component
     public $item_lock=0;
     public $selection_category=0;
     public $categoriesdatas=[];
+    public $selection_batchas='EXP';
 
     protected $listeners = ['editDataRow1' => 'dataEdit1'];
 
@@ -68,6 +69,7 @@ class ItemsView extends Component
         $m_items->name = $this->item_name;
         $m_items->desc = $this->item_desc;
         $m_items->selling_price = $this->selling_price;
+        $m_items->batch_as = $this->selection_batchas;
         $m_items->lock = $this->item_lock;
         $m_items->save();
 
@@ -91,6 +93,7 @@ class ItemsView extends Component
         $datas->name = $this->item_name;
         $datas->desc = $this->item_desc;
         $datas->selling_price = $this->selling_price;
+        $datas->batch_as = $this->selection_batchas;
         $datas->lock = $this->item_lock;
         $datas->save();
        
@@ -110,6 +113,7 @@ class ItemsView extends Component
         $this->item_name = $edit_data->name;
         $this->item_desc = $edit_data->desc;
         $this->selling_price = $edit_data->selling_price;
+        $this->selection_batchas = $edit_data->batch_as;
         $this->item_lock = $edit_data->lock;
         
 

@@ -76,6 +76,17 @@
                             </x-select>
                         </div>
 
+                        <div class="col-span-6">
+                            <label for="selection_batchas" class="block text-sm font-medium text-gray-700">Batch as</label>
+                            <x-select wireprop="wire:model.defer=selection_batchas">
+                                
+                                <option value="EXP">EXPIRED</option>
+                                <option value="ARR">ARRIVAL</option>
+                                <option value="NONE">NONE</option>
+                                
+                            </x-select>
+                        </div>
+                        
                         <x-checkbox-active wireprop="wire:model.lazy=item_lock">
                             Lock
                         </x-checkbox-active>

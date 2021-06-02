@@ -39,15 +39,6 @@
                 {{-- ITEMS --}}
                 <div>
                     
-
-                    
-                    {{-- @if (session()->has('message'))
-                        <div class="mb-2 alert alert-success bg-green-500 px-2 py-3 text-white rounded-md">
-                            {{ session('message') }}
-                        </div>
-                    @endif --}}
-                    
-
                     <x-form action="" mysubmit="{{ $mysubmit1 }}" bttype="submit" title="{{ $form_title1 }}" >
                         
                         <x-input myclass="" type="text" name="item_code" wireprop="wire:model.lazy=item_code" disb="disabled">
@@ -66,6 +57,10 @@
                             Selling Price
                         </x-input>
 
+                        <x-input myclass="" type="text" name="item_unit" wireprop="wire:model.lazy=item_unit" disb="">
+                            Unit
+                        </x-input>
+
                         <div class="col-span-6">
                             <label for="selection_categories" class="block text-sm font-medium text-gray-700">Category</label>
                             
@@ -82,7 +77,7 @@
                                 
                                 <option value="EXP">EXPIRED</option>
                                 <option value="ARR">ARRIVAL</option>
-                                <option value="NONE">NONE</option>
+                                <option value="NONE">None</option>
                                 
                             </x-select>
                         </div>

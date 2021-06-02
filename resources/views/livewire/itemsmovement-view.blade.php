@@ -62,13 +62,21 @@
                         <thead>
                             <tr class="bg-gray-200 text-gray-600 uppercase text-xs leading-normal">
                                 <th class="py-2 px-2 text-left cursor-pointer w-1/3" >Item Number</th>
-                                <th class="py-2 px-2 text-left cursor-pointer" >Name</th>
+                                <th class="py-2 px-2 text-left cursor-pointer flex justify-between" >
+                                    <span class="py-1">Name</span>  
+                                    <x-button-additem wireprop="wire:click=toogleSearchModal">Add</x-button-additem>
+                                </th>
                             </tr>
                         </thead>
                         <tbody class="text-gray-600 text-sm font-light">
                             @php
                                 $index = -1;    
                             @endphp
+                            @if (count($items_cart)==0)
+                            <tr class="border-b border-gray-200">
+                                <td>no item selected</td>
+                            </tr>
+                            @endif
                             @foreach ($items_cart as $item_cart)
                             @php
                                 $index++;    
@@ -105,8 +113,6 @@
                             @endforeach
                         </tbody>
                     </table>
-
-                    
                 </div>
                 {{-- END ITEM --}}
 
@@ -146,7 +152,7 @@
                             </div>
                             @else
                             
-                            <div class="w-1/2 pr-2">{{ $to_location.'a' }}
+                            <div class="w-1/2 pr-2">
                                 <label for="to_location" class="block text-sm font-medium text-gray-700">Location</label>
                                 
                                 <x-select wireprop="wire:model.defer=to_location">
@@ -184,9 +190,12 @@
                             
                         </div>
                         
-                        <x-input myclass="w-1/2 mt-1 pr-2" type="number" name="item_detail_amount" wireprop="wire:model.lazy=item_detail_amount" disb="">
-                            Amount
-                        </x-input>
+                        @if ($selected_movkey_type=='INIT')
+                            <x-input myclass="w-1/2 mt-1 pr-2" type="number" name="item_detail_amount" wireprop="wire:model.lazy=item_detail_amount" disb="">
+                                Amount
+                            </x-input>
+                        @endif
+                        
 
                     </div>
                 @endif
@@ -203,15 +212,52 @@
                         @endforeach
                     </div>
                 @endif
+            
+            </div>
+        
+        </div>          
+    </x-content>
+    {{-- END CONTENT --}}
 
-                {{-- SEARCH ITEMS --}}
-                @if (count($error_list) > 0 )
-                <div class="mt-2 bg-white rounded-md p-2 shadow-md ">
-                @else
-                <div class="bg-white rounded-md p-2 shadow-md ">
-                @endif
-                
-                    <div class="flex justify-between">
+    {{-- SEARCH MODAL --}}
+    @if ($show_item_search)
+        <div class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                <!--
+                Background overlay, show/hide based on modal state.
+
+                Entering: "ease-out duration-300"
+                    From: "opacity-0"
+                    To: "opacity-100"
+                Leaving: "ease-in duration-200"
+                    From: "opacity-100"
+                    To: "opacity-0"
+                -->
+                <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+
+                <!-- This element is to trick the browser into centering the modal contents. -->
+                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+                <!--
+                Modal panel, show/hide based on modal state.
+
+                Entering: "ease-out duration-300"
+                    From: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                    To: "opacity-100 translate-y-0 sm:scale-100"
+                Leaving: "ease-in duration-200"
+                    From: "opacity-100 translate-y-0 sm:scale-100"
+                    To: "opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                -->
+                <div class="inline-block align-top bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-top sm:max-w-lg sm:w-full">
+                    {{-- CLOSE BUTTON --}}
+                    <div class="w-full flex justify-end">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 cursor-pointer text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" wire:click="toogleSearchModal">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                    </div>
+                    {{-- END CLOSE BUTTON --}}
+
+                    <div class="flex justify-between p-2">
                         <div class="w-full">
                             <div class="relative">
 
@@ -221,66 +267,60 @@
                                     </svg>
                                 </span>
                             
-                                <input type="text" class="w-full py-2 pl-10 pr-4 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:ring focus:ring-gray-200 focus:ring-opacity-50 focus:border-gray-300 sm:text-xs" placeholder="Search Items" wire:model.debounce.500ms="search_items">
+                                <input type="text" class="w-full py-2 pl-10 pr-4 text-gray-700 bg-white border border-gray-300 rounded-md dark:bg-gray-800 dark:text-gray-300 dark:border-gray-600 focus:ring focus:ring-gray-200 focus:ring-opacity-50 focus:border-gray-300 sm:text-xs" placeholder="Search Items" wire:model.debounce.500ms="search_items" autofocus>
                             </div>
                         </div>
                         
                     </div>
-                    
-                    
-                        <div class="">
-                            @if (count($data_items)>0)
-                                <table class="w-full table-auto mt-2">
-                                    <thead>
-                                        <tr class="bg-gray-200 text-gray-600 uppercase text-xs leading-normal">
-                                            <th class="py-2 px-2 text-left cursor-pointer w-1/3" >Item Number</th>
-                                            <th class="py-2 px-2 text-left cursor-pointer" >Name</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody class="text-gray-600 text-sm font-light">
-                                        @foreach ($data_items as $data_item)
-                                        <tr class="border-b border-gray-200 hover:bg-gray-100">
 
-                                            <td class=" py-2 px-2 w-1/3">
-                                                <div class="flex">
-                                                    <div class="cursor-pointer" wire:click="addItem({{ $data_item->id }})">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current text-green-600" viewBox="0 0 20 20" fill="currentColor">
-                                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
-                                                        </svg>
-                                                    </div>
-                                                    <div class="ml-2">
-                                                        {{ $data_item->id }}
-                                                    </div>
+                    <div class="px-2">
+                        @if (count($data_items)>0)
+                            <table class="w-full table-auto mt-2">
+                                <thead>
+                                    <tr class="bg-gray-200 text-gray-600 uppercase text-xs leading-normal">
+                                        <th class="py-2 px-2 text-left cursor-pointer w-1/3" >Item Number</th>
+                                        <th class="py-2 px-2 text-left cursor-pointer" >Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-gray-600 text-sm font-light">
+                                    @foreach ($data_items as $data_item)
+                                    <tr class="border-b border-gray-200 hover:bg-gray-100">
+
+                                        <td class=" py-2 px-2 w-1/3">
+                                            <div class="flex">
+                                                <div class="cursor-pointer" wire:click="addItem({{ $data_item->id }})">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current text-green-600" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd" />
+                                                    </svg>
                                                 </div>
-                                                
-                                            </td>
-                                            <td class=" py-2 px-2 text-left ">
-                                                {{ $data_item->name }}
-                                            </td>
+                                                <div class="ml-2">
+                                                    {{ $data_item->id }}
+                                                </div>
+                                            </div>
                                             
-                                        </tr>
-                                        @endforeach
-                                    </tbody>
-                                </table>
-                            @endif
-                        </div>
+                                        </td>
+                                        <td class=" py-2 px-2 text-left ">
+                                            {{ $data_item->name }}
+                                        </td>
+                                        
+                                    </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        @endif
+                    </div>
 
                     @if ($items_found==false)
                         <span>no items found</span>
                     @endif
 
+                    
                 </div>
-                {{-- END SEARCH ITEM --}}
-
-                
-            
             </div>
-        
-        </div>          
-    </x-content>
+        </div>
+    @endif
+   {{-- END SEARCH MODAL --}}
 
-
-    {{-- END CONTENT --}}
 </div>
 
 

@@ -19,6 +19,7 @@ class CreateMItemsTable extends Migration
             $table->unsignedBigInteger('category_id');
             $table->string('name');
             $table->text('desc')->nullable();
+            $table->string('unit', 3);
             $table->double('selling_price', 15, 2)->nullable();
             $table->boolean('lock')->nullable();
             $table->string('batch_as');

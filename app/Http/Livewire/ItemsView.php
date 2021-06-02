@@ -17,6 +17,7 @@ class ItemsView extends Component
     public $item_code;
     public $item_name;
     public $item_desc;
+    public $item_unit;
     public $selling_price;
     public $item_lock=0;
     public $selection_category=0;
@@ -50,6 +51,7 @@ class ItemsView extends Component
         $this->item_code = "";
         $this->item_name = "";
         $this->item_desc = "";
+        $this->item_unit = "";
         $this->selling_price = "";
         $this->selection_category = 0;
         $this->item_lock = 0;
@@ -68,6 +70,7 @@ class ItemsView extends Component
         $m_items->category_id = $this->selection_category;
         $m_items->name = $this->item_name;
         $m_items->desc = $this->item_desc;
+        $m_items->unit = strtoupper($this->item_unit);
         $m_items->selling_price = $this->selling_price;
         $m_items->batch_as = $this->selection_batchas;
         $m_items->lock = $this->item_lock;
@@ -92,6 +95,7 @@ class ItemsView extends Component
         $datas->category_id = $this->selection_category;
         $datas->name = $this->item_name;
         $datas->desc = $this->item_desc;
+        $datas->unit = strtoupper($this->item_unit);
         $datas->selling_price = $this->selling_price;
         $datas->batch_as = $this->selection_batchas;
         $datas->lock = $this->item_lock;
@@ -112,6 +116,7 @@ class ItemsView extends Component
         $this->item_code = $edit_data->id;
         $this->item_name = $edit_data->name;
         $this->item_desc = $edit_data->desc;
+        $this->item_unit = $edit_data->unit;
         $this->selling_price = $edit_data->selling_price;
         $this->selection_batchas = $edit_data->batch_as;
         $this->item_lock = $edit_data->lock;

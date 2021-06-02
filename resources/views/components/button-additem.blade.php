@@ -1,0 +1,1 @@
+<button class="bg-gray-700 rounded px-3 py-1 text-white shadow-md" {{ $wireprop }}>{{ $slot }}</button>

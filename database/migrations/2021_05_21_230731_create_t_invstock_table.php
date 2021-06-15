@@ -14,8 +14,9 @@ class CreateTInvstockTable extends Migration
     public function up()
     {
         Schema::create('t_invstock', function (Blueprint $table) {
-            $table->id();
+            $table->unsignedBigInteger('id');
             $table->unsignedBigInteger('item_id');
+            $table->unsignedBigInteger('company_id');
             $table->smallInteger('period');
             $table->year('year');
             $table->unsignedBigInteger('location_id');
@@ -24,7 +25,12 @@ class CreateTInvstockTable extends Migration
             $table->double('qty',10,2);
             $table->timestamps();
 
-            $table->primary(['item_id','period','year','location_id','batch'],'t_invstock_primary');
+            $table->foreign('company_id')
+                ->references('id')
+                ->on('companies')
+                ->onDelete('no action');
+
+            $table->primary(['id','item_id','company_id','period','year','location_id','batch'],'t_invstock_primary');
         });
     }
 

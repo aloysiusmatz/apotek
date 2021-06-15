@@ -12,6 +12,7 @@ class t_invstock extends Model
 
     protected $fillable = [
         'item_id',
+        'company_id',
         'period',
         'year',
         'location_id',

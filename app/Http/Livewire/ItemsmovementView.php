@@ -10,6 +10,7 @@ use App\Models\t_itmove_d;
 use App\Models\t_itmove_h;
 use App\Models\m_locations;
 use App\Models\t_pricehist;
+use App\Traits\InventoryMovement;
 use Illuminate\Support\Facades\DB;
 
 class ItemsmovementView extends Component
@@ -39,6 +40,8 @@ class ItemsmovementView extends Component
     public $show_item_search=false;
     public $cnt=0;
 
+    use InventoryMovement;
+    
     public function render()
     {
         if ($this->search_items != '') {
@@ -50,54 +53,90 @@ class ItemsmovementView extends Component
 
         $this->loadMovkey();
         $this->loadLocation();
-    
+        
+        $this->cnt++;
         return view('livewire.itemsmovement-view');
     }
 
     public function loadMovkey(){
-        $this->selection_movkeys = DB::table('movement_keys')
-        ->whereIn('type', ['INIT','OWV','OWOV','TRANS'])
-        ->where('active',1)
-        ->get();
+        
+        if (count($this->selection_movkeys)==0) {
+            $this->selection_movkeys = DB::table('movement_keys')
+            ->whereIn('type', ['INIT','OWV','OWOV','TRANS'])
+            ->where('active',1)
+            ->get()->toArray();
 
+            $index=0;
+            foreach ($this->selection_movkeys as $selection_movkey) {
+                $this->selection_movkeys[$index] = (array) $selection_movkey;
+                $index++;
+            }
+        }
+        
         if ($this->selected_movkey == 0) {
-            $this->selected_movkey = $this->selection_movkeys->first()->id;
-            $this->selected_movkey_type = $this->selection_movkeys->first()->type;
-            $this->selected_movkey_behaviour = $this->selection_movkeys->first()->behaviour;
-            $this->selected_movkey_name = $this->selection_movkeys->first()->name;
+            $this->selected_movkey = $this->selection_movkeys[0]['id'];
+            $this->selected_movkey_type = $this->selection_movkeys[0]['type'];
+            $this->selected_movkey_behaviour = $this->selection_movkeys[0]['behaviour'];
+            $this->selected_movkey_name = $this->selection_movkeys[0]['name'];
         }else{
-            $this->selected_movkey_type = $this->selection_movkeys->firstWhere('id',$this->selected_movkey)->type;
-            $this->selected_movkey_behaviour = $this->selection_movkeys->firstWhere('id',$this->selected_movkey)->behaviour;
-            $this->selected_movkey_name = $this->selection_movkeys->firstWhere('id',$this->selected_movkey)->name;
+            $selected = array_search($this->selected_movkey, array_column($this->selection_movkeys, 'id'));
+            
+            $this->selected_movkey_type = $this->selection_movkeys[$selected]['type'];
+            $this->selected_movkey_behaviour = $this->selection_movkeys[$selected]['behaviour'];
+            $this->selected_movkey_name = $this->selection_movkeys[$selected]['name'];
         }
         
     }
 
     public function loadLocation(){
         
-        $this->selection_to_locations = DB::table('m_locations')
-                                        ->select('id','name')
-                                        ->where('company_id', session()->get('company_id'))
-                                        ->orderBy('name', 'asc')
-                                        ->get();
-        
+        if (count($this->selection_to_locations)==0) {
+            $this->selection_to_locations = DB::table('m_locations')
+                                            ->select('id','name')
+                                            ->where('company_id', session()->get('company_id'))
+                                            ->orderBy('name', 'asc')
+                                            ->get()->toArray();
+            
+            $index=0;
+            foreach ($this->selection_to_locations as $location) {
+                $this->selection_to_locations[$index] = (array) $location;
+                $index++;
+            }
+        }
+
         if ($this->selected_movkey_behaviour=='TRANS') {
             if ($this->from_location==0) {
-                $this->from_location = $this->selection_to_locations->first()->id;
+                $this->from_location = $this->selection_to_locations[0]['id'];
             }
         }
         if ($this->selected_movkey_behaviour=='GR' || $this->selected_movkey_behaviour=='GI'|| $this->selected_movkey_behaviour=='TRANS') {
             if ($this->to_location==0) {
-                $this->to_location = $this->selection_to_locations->first()->id;
+                $this->to_location = $this->selection_to_locations[0]['id'];
             }
         }
     }
 
     public function initField(){
-        $selected_movkey=0;
-        $selection_movkeys=[];
-        $posting_date = '';
-        $items_cart=[];
+        $this->selected_movkey=0;
+        $this->selected_movkey_type='';
+        $this->selected_movkey_name='';
+        $this->selected_movkey_behaviour='';
+        $this->posting_date = '';
+        $this->desc='';
+        $this->items_cart=[];
+        $this->search_items='';
+        $this->data_items=[];
+        $this->items_found=true;
+        $this->selected_cart=-1;
+        $this->item_detail_qty=1;
+        $this->from_location=0;
+        $this->to_location=0;
+        $this->from_batch=0;
+        $this->to_batch=0;
+        $this->item_detail_amount=0;
+        $this->items_cart_details=[];
+        $this->error_list=[];
+        $this->show_item_search=false;
     }
 
     public function toogleSearchModal(){
@@ -132,9 +171,19 @@ class ItemsmovementView extends Component
 
         if ($count>=1) {
             $this->saveItemDetail();
-            $this->items_cart[$count] = ['id' => $id, 'name' => $m_items->name];
+            $this->items_cart[$count] = [
+                'id' => $id, 
+                'show_id' => $m_items->show_id ,
+                'name' => $m_items->name,
+                'batch_as' => $m_items->batch_as
+            ];
         }else{
-            $this->items_cart[0] = ['id' => $id, 'name' => $m_items->name];
+            $this->items_cart[0] = [
+                'id' => $id, 
+                'show_id' => $m_items->show_id ,
+                'name' => $m_items->name,
+                'batch_as' => $m_items->batch_as
+            ];
         }
         
         $this->search_items = '';
@@ -225,13 +274,25 @@ class ItemsmovementView extends Component
         if(count($this->items_cart)==0){
             $this->add_error_message('Select at least one item');
         }
-        if ($this->selected_movkey_type=='INIT' && $this->items_cart_details[$index]['amount']==0) {
-            $this->add_error_message('Amount must be greater than 0');
-        }
+        // if ($this->selected_movkey_type=='INIT') {
+        //     $this->add_error_message('Amount must be greater than 0');
+        // }
         if ($this->selected_movkey_type=='PURC' || $this->selected_movkey_type=='OWOV' || $this->selected_movkey_type=='TRANS' || $this->selected_movkey_type=='SELL') {
-            $this->items_cart_details[$index]['amount'] = 0;
+            foreach ($this->items_cart_details as $item_cart_detail) {
+                $items_cart_detail['amount'] = 0;
+            }
         }
 
+        //cek batch
+        $index=0;
+        foreach ($this->items_cart as $item_cart) {
+            if ($item_cart['batch_as']!='NONE') {
+                if (!date_create($this->items_cart_details[$index]['to_batch'])) {
+                    $this->add_error_message('Batch must be in date format');
+                }
+            }
+        }
+        
         //show error message
         if(count($this->error_list)>0){
             $error = true;
@@ -259,22 +320,15 @@ class ItemsmovementView extends Component
                     $location_id = $this->items_cart_details[$index]['from_location'];
                     $batch = $this->items_cart_details[$index]['from_batch'];
                 }
-                $get_ending_inv = DB::table('t_invstock')
-                                    ->where('item_id',$item_cart['id'])
-                                    ->where('location_id',$location_id)
-                                    ->where('batch',$batch)
-                                    ->where('category', 'ending')
-                                    ->orderBy('year','desc')
-                                    ->orderBy('period','desc')
-                                    ->limit(1)
-                                    ->get();
                 
-                $ending_stock = $get_ending_inv->first()->qty;
+                $get_ending_inv = $this->getEndingInv($item_cart['id'],session()->get('company_id'),$location_id,$batch);
+                
+                $ending_stock = $get_ending_inv['qty'];
                 
                 if ($ending_stock < $this->items_cart_details[$index]['qty']) {
-                    $location_name = m_locations::find($this->items_cart_details[$index]['to_location'])->name;
+                    $location_name = m_locations::find($location_id)->name;
                     
-                    $this->add_error_message('Insufficient stock of item '.$item_cart['id'].'-'.$item_cart['name'].' location '.$location_name.', batch '.$this->items_cart_details[$index]['to_batch']);
+                    $this->add_error_message('Insufficient stock of item '.$item_cart['show_id'].'-'.$item_cart['name'].', location '.$location_name.', batch '.$this->items_cart_details[$index]['to_batch'].', '.$ending_stock.' remaining');
 
                 }
                 $index++;
@@ -310,7 +364,7 @@ class ItemsmovementView extends Component
             $index=0;
             if ($this->selected_movkey_behaviour == 'GR') {
                 foreach ($this->items_cart as $item_cart) {
-                    $t_itmove_d[$index] = t_itmove_d::create([
+                    $t_itmove_d = t_itmove_d::create([
                         'id' => $t_itmove_h->id,
                         'item_id' => $item_cart['id'],
                         'to_loc' => $this->items_cart_details[$index]['to_location'],
@@ -323,7 +377,7 @@ class ItemsmovementView extends Component
                 
             }elseif ($this->selected_movkey_behaviour == 'GI') {
                 foreach ($this->items_cart as $item_cart) {
-                    $t_itmove_d[$index] = t_itmove_d::create([
+                    $t_itmove_d = t_itmove_d::create([
                         'id' => $t_itmove_h->id,
                         'item_id' => $item_cart['id'],
                         'from_loc' => $this->items_cart_details[$index]['to_location'],
@@ -335,7 +389,7 @@ class ItemsmovementView extends Component
                 }
             }elseif ($this->selected_movkey_behaviour == 'TRANS') {
                 foreach ($this->items_cart as $item_cart) {
-                    $t_itmove_d[$index] = t_itmove_d::create([
+                    $t_itmove_d = t_itmove_d::create([
                         'id' => $t_itmove_h->id,
                         'item_id' => $item_cart['id'],
                         'from_loc' => $this->items_cart_details[$index]['from_location'],
@@ -353,32 +407,30 @@ class ItemsmovementView extends Component
             $index=0;
             if ($this->selected_movkey_behaviour == 'GR') {
                 foreach ($this->items_cart as $item_cart) {
-                    $get_t_invstock = DB::table('t_invstock')
-                                        ->where('item_id',$item_cart['id'])
-                                        ->where('period',$month)
-                                        ->where('year',$year)
-                                        ->where('location_id',$this->items_cart_details[$index]['to_location'])
-                                        ->where('batch',$this->items_cart_details[$index]['to_batch'])
-                                        ->get();
+                     
+                    $get_t_invstock = $this->getMonthEndingInv(
+                        $item_cart['id'],
+                        session()->get('company_id'),
+                        $month,
+                        $year,
+                        $this->items_cart_details[$index]['to_location'],
+                        $this->items_cart_details[$index]['to_batch']
+                    );
 
-                    $get_t_invstock_previous = DB::table('t_invstock')
-                                        ->where('item_id',$item_cart['id'])
-                                        ->where('period',$previous_month)
-                                        ->where('year',$previous_year)
-                                        ->where('location_id',$this->items_cart_details[$index]['to_location'])
-                                        ->where('batch',$this->items_cart_details[$index]['to_batch'])
-                                        ->where('category', 'ending')
-                                        ->get();   
+                    $get_t_invstock_previous = $this->getEndingInv(
+                        $item_cart['id'],
+                        session()->get('company_id'),
+                        $this->items_cart_details[$index]['to_location'],
+                        $this->items_cart_details[$index]['to_batch']
+                    );
 
-                    if(count($get_t_invstock)==0){
-                        if (count($get_t_invstock_previous)==0) {
-                            $qty = 0;
-                        }else{
-                            $qty = $get_t_invstock_previous->first()->qty;
-                        }
+                    if($get_t_invstock['period']==''){
+                        
+                        $qty = $get_t_invstock_previous['qty'];
 
                         $t_invstock = t_invstock::create([
                             'item_id' => $item_cart['id'],
+                            'company_id' => session()->get('company_id'),
                             'period' => $month ,
                             'year' => $year ,
                             'location_id' => $this->items_cart_details[$index]['to_location'] ,
@@ -388,6 +440,7 @@ class ItemsmovementView extends Component
                         ]);
                         $t_invstock = t_invstock::create([
                             'item_id' => $item_cart['id'],
+                            'company_id' => session()->get('company_id'),
                             'period' => $month ,
                             'year' => $year ,
                             'location_id' => $this->items_cart_details[$index]['to_location'] ,
@@ -400,6 +453,7 @@ class ItemsmovementView extends Component
                     
                     $t_invstock = t_invstock::create([
                         'item_id' => $item_cart['id'],
+                        'company_id' => session()->get('company_id'),
                         'period' => $month ,
                         'year' => $year ,
                         'location_id' => $this->items_cart_details[$index]['to_location'] ,
@@ -425,32 +479,30 @@ class ItemsmovementView extends Component
                 }
             }elseif ($this->selected_movkey_behaviour == 'GI') {
                 foreach ($this->items_cart as $item_cart) {
-                    $get_t_invstock = DB::table('t_invstock')
-                                        ->where('item_id',$item_cart['id'])
-                                        ->where('period',$month)
-                                        ->where('year',$year)
-                                        ->where('location_id',$this->items_cart_details[$index]['to_location'])
-                                        ->where('batch',$this->items_cart_details[$index]['to_batch'])
-                                        ->get();
+                    
+                    $get_t_invstock = $this->getMonthEndingInv(
+                        $item_cart['id'],
+                        session()->get('company_id'),
+                        $month,
+                        $year,
+                        $this->items_cart_details[$index]['to_location'],
+                        $this->items_cart_details[$index]['to_batch']
+                    );
 
-                    $get_t_invstock_previous = DB::table('t_invstock')
-                                        ->where('item_id',$item_cart['id'])
-                                        ->where('period',$previous_month)
-                                        ->where('year',$previous_year)
-                                        ->where('location_id',$this->items_cart_details[$index]['to_location'])
-                                        ->where('batch',$this->items_cart_details[$index]['to_batch'])
-                                        ->where('category', 'ending')
-                                        ->get();   
+                    $get_t_invstock_previous = $this->getEndingInv(
+                        $item_cart['id'],
+                        session()->get('company_id'),
+                        $this->items_cart_details[$index]['to_location'],
+                        $this->items_cart_details[$index]['to_batch']
+                    );
 
-                    if(count($get_t_invstock)==0){
-                        if (count($get_t_invstock_previous)==0) {
-                            $qty = 0;
-                        }else{
-                            $qty = $get_t_invstock_previous->first()->qty;
-                        }
+                    if($get_t_invstock['period']==''){
+                        
+                        $qty = $get_t_invstock_previous['qty'];
 
                         $t_invstock = t_invstock::create([
                             'item_id' => $item_cart['id'],
+                            'company_id' => session()->get('company_id'),
                             'period' => $month ,
                             'year' => $year ,
                             'location_id' => $this->items_cart_details[$index]['to_location'] ,
@@ -460,6 +512,7 @@ class ItemsmovementView extends Component
                         ]);
                         $t_invstock = t_invstock::create([
                             'item_id' => $item_cart['id'],
+                            'company_id' => session()->get('company_id'),
                             'period' => $month ,
                             'year' => $year ,
                             'location_id' => $this->items_cart_details[$index]['to_location'] ,
@@ -474,6 +527,7 @@ class ItemsmovementView extends Component
 
                     $t_invstock = t_invstock::create([
                         'item_id' => $item_cart['id'],
+                        'company_id' => session()->get('company_id'),
                         'period' => $month ,
                         'year' => $year ,
                         'location_id' => $this->items_cart_details[$index]['to_location'] ,
@@ -499,32 +553,29 @@ class ItemsmovementView extends Component
             }elseif ($this->selected_movkey_behaviour == 'TRANS') {
                 foreach ($this->items_cart as $item_cart) {
                     //record "from"
-                    $get_t_invstock_from = DB::table('t_invstock')
-                                        ->where('item_id',$item_cart['id'])
-                                        ->where('period',$month)
-                                        ->where('year',$year)
-                                        ->where('location_id',$this->items_cart_details[$index]['from_location'])
-                                        ->where('batch',$this->items_cart_details[$index]['from_batch'])
-                                        ->get();
+                    $get_t_invstock_from = $this->getMonthEndingInv(
+                        $item_cart['id'],
+                        session()->get('company_id'),
+                        $month,
+                        $year,
+                        $this->items_cart_details[$index]['from_location'],
+                        $this->items_cart_details[$index]['from_batch']
+                    );
 
-                    $get_t_invstock_previous_from = DB::table('t_invstock')
-                                        ->where('item_id',$item_cart['id'])
-                                        ->where('period',$previous_month)
-                                        ->where('year',$previous_year)
-                                        ->where('location_id',$this->items_cart_details[$index]['from_location'])
-                                        ->where('batch',$this->items_cart_details[$index]['from_batch'])
-                                        ->where('category', 'ending')
-                                        ->get();   
+                    $get_t_invstock_previous_from = $this->getEndingInv(
+                        $item_cart['id'],
+                        session()->get('company_id'),
+                        $this->items_cart_details[$index]['from_location'],
+                        $this->items_cart_details[$index]['from_batch']
+                    );
 
-                    if(count($get_t_invstock_from)==0){
-                        if (count($get_t_invstock_previous_from)==0) {
-                            $qty = 0;
-                        }else{
-                            $qty = $get_t_invstock_previous_from->first()->qty;
-                        }
+                    if($get_t_invstock_from['period']==''){
+                        
+                        $qty = $get_t_invstock_previous_from['qty'];
 
                         $t_invstock = t_invstock::create([
                             'item_id' => $item_cart['id'],
+                            'company_id' => session()->get('company_id'),
                             'period' => $month ,
                             'year' => $year ,
                             'location_id' => $this->items_cart_details[$index]['from_location'] ,
@@ -534,6 +585,7 @@ class ItemsmovementView extends Component
                         ]);
                         $t_invstock = t_invstock::create([
                             'item_id' => $item_cart['id'],
+                            'company_id' => session()->get('company_id'),
                             'period' => $month ,
                             'year' => $year ,
                             'location_id' => $this->items_cart_details[$index]['from_location'] ,
@@ -548,6 +600,7 @@ class ItemsmovementView extends Component
 
                     $t_invstock = t_invstock::create([
                         'item_id' => $item_cart['id'],
+                        'company_id' => session()->get('company_id'),
                         'period' => $month ,
                         'year' => $year ,
                         'location_id' => $this->items_cart_details[$index]['from_location'] ,
@@ -570,32 +623,29 @@ class ItemsmovementView extends Component
                     );
 
                     //record "to"
-                    $get_t_invstock_to = DB::table('t_invstock')
-                                        ->where('item_id',$item_cart['id'])
-                                        ->where('period',$month)
-                                        ->where('year',$year)
-                                        ->where('location_id',$this->items_cart_details[$index]['to_location'])
-                                        ->where('batch',$this->items_cart_details[$index]['to_batch'])
-                                        ->get();
+                    $get_t_invstock_to = $this->getMonthEndingInv(
+                        $item_cart['id'],
+                        session()->get('company_id'),
+                        $month,
+                        $year,
+                        $this->items_cart_details[$index]['to_location'],
+                        $this->items_cart_details[$index]['to_batch']
+                    );
 
-                    $get_t_invstock_previous_to = DB::table('t_invstock')
-                                        ->where('item_id',$item_cart['id'])
-                                        ->where('period',$previous_month)
-                                        ->where('year',$previous_year)
-                                        ->where('location_id',$this->items_cart_details[$index]['to_location'])
-                                        ->where('batch',$this->items_cart_details[$index]['to_batch'])
-                                        ->where('category', 'ending')
-                                        ->get();   
+                    $get_t_invstock_previous_to = $this->getEndingInv(
+                        $item_cart['id'],
+                        session()->get('company_id'),
+                        $this->items_cart_details[$index]['to_location'],
+                        $this->items_cart_details[$index]['to_batch']
+                    );
 
-                    if(count($get_t_invstock_to)==0){
-                        if (count($get_t_invstock_previous_to)==0) {
-                            $qty = 0;
-                        }else{
-                            $qty = $get_t_invstock_previous_to->first()->qty;
-                        }
+                    if($get_t_invstock_to['period']==''){
+                        
+                        $qty = $get_t_invstock_previous_to['qty'];
 
                         $t_invstock = t_invstock::create([
                             'item_id' => $item_cart['id'],
+                            'company_id' => session()->get('company_id'),
                             'period' => $month ,
                             'year' => $year ,
                             'location_id' => $this->items_cart_details[$index]['to_location'] ,
@@ -605,6 +655,7 @@ class ItemsmovementView extends Component
                         ]);
                         $t_invstock = t_invstock::create([
                             'item_id' => $item_cart['id'],
+                            'company_id' => session()->get('company_id'),
                             'period' => $month ,
                             'year' => $year ,
                             'location_id' => $this->items_cart_details[$index]['to_location'] ,
@@ -619,6 +670,7 @@ class ItemsmovementView extends Component
 
                     $t_invstock = t_invstock::create([
                         'item_id' => $item_cart['id'],
+                        'company_id' => session()->get('company_id'),
                         'period' => $month ,
                         'year' => $year ,
                         'location_id' => $this->items_cart_details[$index]['to_location'] ,
@@ -650,57 +702,83 @@ class ItemsmovementView extends Component
             if ($this->selected_movkey_behaviour == 'GR'){
 
                 foreach ($this->items_cart as $item_cart) {
-                    //get last price history of this item
-                    $latest_record = DB::table('t_pricehist')
-                                        ->where('item_id', $item_cart['id'])
-                                        ->latest()->get();
-
-                    if(count($latest_record) > 0){
-                        $total_qty = $latest_record->first()->total_qty + $this->items_cart_details[$index]['qty'];
-                        $total_amount = $latest_record->first()->total_amount + $this->items_cart_details[$index]['amount'];
-                    }else {
-                        $total_qty = $this->items_cart_details[$index]['qty'];
-                        $total_amount = $this->items_cart_details[$index]['amount'];
-                    }
                     
+                    $latest_record = $this->latestPriceHistory($item_cart['id'],session()->get('company_id'));
+
+                    $qty = $this->items_cart_details[$index]['qty'];
+                    $total_qty = $latest_record['total_qty'] + $this->items_cart_details[$index]['qty'];
+                    
+                    if ($this->selected_movkey_type=='OWV') {
+                        $amount = $latest_record['cogs'] * $qty;
+                    }elseif ($this->selected_movkey_type=='INIT') {
+                        $amount = $this->items_cart_details[$index]['amount'];
+                    }elseif ($this->selected_movkey_type=='OWOV') {
+                        $amount = 0;
+                    }
+
+                    $total_amount = $latest_record['total_amount'] + $amount;
+
                     $cogs = $total_amount / $total_qty;
+
+                    // dd($qty.','.$amount.','.$total_qty.','.$total_amount.','.$cogs);
 
                     $t_pricehist = t_pricehist::create([
                         'posting_date' => $this->posting_date,
                         'movement_id' => $t_itmove_h->id,
                         'movement_key' => $this->selected_movkey,
                         'item_id' => $item_cart['id'],
+                        'company_id' => session()->get('company_id'),
                         'qty' => $this->items_cart_details[$index]['qty'],
                         'amount' => $this->items_cart_details[$index]['amount'],
                         'total_qty' => $total_qty,
                         'total_amount' => $total_amount,
                         'cogs' => $cogs
                     ]);
+
+                    // $update_itmove_d = DB::update(
+                    //     'update t_itmove_d set amount='.$amount.' where id=?',
+                    //     [$t_itmove_h->id]
+                    // );
+
+                    $update_itmove_d = DB::table('t_itmove_d')
+                                        ->where('id',$t_itmove_h->id)
+                                        ->update(
+                                            ['amount' => $amount]
+                                        );
+
+                    $update_m_items = DB::table('m_items')
+                                        ->where('item_id', $item_cart['id'])
+                                        ->where('company_id', session()->get('company_id'))
+                                        ->update(
+                                            ['total_qty' => $total_qty],
+                                            ['total_amount' => $total_amount]
+                                        );
+
                     $index++;
                 }
 
             }elseif ($this->selected_movkey_behaviour == 'GI') {
                 foreach ($this->items_cart as $item_cart) {
-                    //get last price history of this item
-                    $latest_record = DB::table('t_pricehist')
-                                        ->where('item_id', $item_cart['id'])
-                                        ->latest()->get();
-
+                    
+                    $latest_record = $this->latestPriceHistory($item_cart['id'],session()->get('company_id'));
+                    
                     $qty = $this->items_cart_details[$index]['qty']*-1;
+                    
                     $amount = 0;
 
-                    if(count($latest_record) > 0){
-                        $total_qty = $latest_record->first()->total_qty + $qty;
+                    if($latest_record['found']){
+                        
+                        $total_qty = $latest_record['total_qty'] + $qty;
                         if ($this->selected_movkey_type=='OWV') {
-                            $amount = $latest_record->first()->cogs * $qty;
+                            $amount = $latest_record['cogs'] * $qty;
                         }elseif ($this->selected_movkey_type=='OWOV') {
                             $amount = 0;
                         }
                         
                         if ($total_qty==0) {
-                            $total_amount = 0;
+                            $total_amount = 0; //memastikan supaya amount 0 jika qty 0
                         }else{
-                            $total_amount = $latest_record->first()->total_amount + $amount;
+                            $total_amount = $latest_record['total_amount'] + $amount;
                             if ($total_amount < 0) {
                                 $total_amount = 0;
                             }
@@ -713,12 +791,13 @@ class ItemsmovementView extends Component
                     }
                     
                     $cogs = $total_amount / $total_qty;
-
+                    // dd($qty.','.$amount.','.$total_qty.','.$total_amount.','.$cogs);
                     $t_pricehist = t_pricehist::create([
                         'posting_date' => $this->posting_date,
                         'movement_id' => $t_itmove_h->id,
                         'movement_key' => $this->selected_movkey,
                         'item_id' => $item_cart['id'],
+                        'company_id' => session()->get('company_id'),
                         'qty' => $qty,
                         'amount' => $amount,
                         'total_qty' => $total_qty,
@@ -728,18 +807,33 @@ class ItemsmovementView extends Component
 
                     $amount_itmove_d = $amount*-1;
                     
-                    $update_itmove_d = DB::update(
-                        'update t_itmove_d set amount='.$amount_itmove_d.' where id=?',
-                        [$t_itmove_h->id]
-                    );
+                    // $update_itmove_d = DB::update(
+                    //     'update t_itmove_d set amount='.$amount_itmove_d.' where id=?',
+                    //     [$t_itmove_h->id]
+                    // );
+
+                    $update_itmove_d = DB::table('t_itmove_d')
+                                        ->where('id',$t_itmove_h->id)
+                                        ->update(
+                                            ['amount' => $$amount_itmove_d]
+                                        );
+
+                    $update_m_items = DB::table('m_items')
+                                        ->where('item_id', $item_cart['id'])
+                                        ->where('company_id', session()->get('company_id'))
+                                        ->update(
+                                            ['total_qty' => $total_qty],
+                                            ['total_amount' => $total_amount]
+                                        );
+
                     $index++;
                 }
             }elseif ($this->selected_movkey_behaviour == 'TRANS') {
                 # code...
             }
-            
-            
+                        
         });
         
+        $this->initField();
     }
 }

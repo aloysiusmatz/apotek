@@ -16,6 +16,7 @@ class CreateMItemsTable extends Migration
         Schema::create('m_items', function (Blueprint $table) {
             $table->id()->startingValue(1000001);
             $table->unsignedBigInteger('company_id');
+            $table->unsignedBigInteger('show_id');
             $table->unsignedBigInteger('category_id');
             $table->string('name');
             $table->text('desc')->nullable();
@@ -23,6 +24,8 @@ class CreateMItemsTable extends Migration
             $table->double('selling_price', 15, 2)->nullable();
             $table->boolean('lock')->nullable();
             $table->string('batch_as');
+            $table->double('total_qty', 10,2)->nullable();
+            $table->double('total_amount', 15,2)->nullable();
             $table->timestamps();
 
             $table->foreign('company_id')

@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ItemsController;
 use App\Http\Controllers\UsersController;
+use App\Http\Controllers\ExportController;
 use App\Http\Controllers\CompaniesController;
 use App\Http\Controllers\DeveloperController;
 use App\Http\Controllers\LocationsController;
@@ -13,6 +14,8 @@ use App\Http\Controllers\MovementKeyController;
 use App\Http\Controllers\ItemsMovementController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RolesPermissionController;
+use App\Http\Controllers\ReportItemsSummaryController;
+use App\Http\Controllers\ReportItemsMovementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,6 +42,9 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/categories', [CategoriesC
 Route::middleware(['auth:sanctum', 'verified'])->get('/locations', [LocationsController::class, 'index'])->name('locations');
 Route::middleware(['auth:sanctum', 'verified'])->get('/itemsmovement', [ItemsMovementController::class, 'index'])->name('itemsmovement');
 Route::middleware(['auth:sanctum', 'verified'])->get('/purchaseorder', [PurchaseOrderController::class, 'index'])->name('purchaseorder');
+Route::middleware(['auth:sanctum', 'verified'])->get('/report/itemsmovement', [ReportItemsMovementController::class, 'index'])->name('report.itemsmovement');
+Route::middleware(['auth:sanctum', 'verified'])->get('/report/itemssummary', [ReportItemsSummaryController::class, 'index'])->name('report.itemssummary');
+// Route::middleware(['auth:sanctum', 'verified'])->get('/export', [ExportController::class, 'index'])->name('export');
 Route::middleware(['auth:sanctum', 'verified'])->get('/setcompany', [SetCompanyController::class, 'index'])->name('setcompany');
 Route::middleware(['auth:sanctum', 'verified'])->get('/developer', [DeveloperController::class, 'index'])->name('developer');
 Route::middleware(['auth:sanctum', 'verified'])->get('/developer/companies', [CompaniesController::class, 'index'])->name('developer.companies');

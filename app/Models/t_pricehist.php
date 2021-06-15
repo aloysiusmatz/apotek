@@ -16,6 +16,7 @@ class t_pricehist extends Model
         'movement_id',
         'movement_key',
         'item_id',
+        'company_id',
         'qty',
         'amount',
         'total_qty',

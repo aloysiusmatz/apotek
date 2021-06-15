@@ -19,6 +19,7 @@ class CreateTPricehistTable extends Migration
             $table->unsignedBigInteger('movement_id');
             $table->unsignedBigInteger('movement_key');
             $table->unsignedBigInteger('item_id');
+            $table->unsignedBigInteger('company_id');
             $table->double('qty',10,2);
             $table->double('amount', 15,2);
             $table->double('total_qty',10,2);
@@ -26,6 +27,10 @@ class CreateTPricehistTable extends Migration
             $table->double('cogs', 15,2);
             $table->timestamps();
 
+            $table->foreign('company_id')
+                ->references('id')
+                ->on('companies')
+                ->onDelete('no action');
         });
     }
 

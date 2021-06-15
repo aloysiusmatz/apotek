@@ -59,22 +59,41 @@ class ItemsView extends Component
     }
 
     public function formatField1(){
-        $this->item_name =  strtoupper($this->item_name);
+        if ($this->item_name != '') {
+            $this->item_name =  strtoupper($this->item_name);
+        }
+        if ($this->item_unit != '') {
+            $this->item_unit =  strtoupper($this->item_unit);
+        }
+        
+        
     }
 
     public function createData1(){
         $this->formatField1();
 
-        $m_items = new m_items;
-        $m_items->company_id = session()->get('company_id');
-        $m_items->category_id = $this->selection_category;
-        $m_items->name = $this->item_name;
-        $m_items->desc = $this->item_desc;
-        $m_items->unit = strtoupper($this->item_unit);
-        $m_items->selling_price = $this->selling_price;
-        $m_items->batch_as = $this->selection_batchas;
-        $m_items->lock = $this->item_lock;
-        $m_items->save();
+        $m_items = DB::insert('insert into apotek.m_items(company_id,show_id,category_id,name,`desc` ,unit,selling_price,`lock`,batch_as) values (?, (select IFNULL(max(show_id),1000000)+1 FROM apotek.m_items b where b.company_id = '.session()->get('company_id').'),?,?,?,?,?,?,?)', [
+            session()->get('company_id'), 
+            $this->selection_category,
+            $this->item_name,
+            $this->item_desc,
+            strtoupper($this->item_unit),
+            $this->selling_price,
+            $this->item_lock,
+            $this->selection_batchas
+            ]);
+
+        // $m_items = new m_items;
+        // $m_items->company_id = session()->get('company_id');
+        
+        // $m_items->category_id = $this->selection_category;
+        // $m_items->name = $this->item_name;
+        // $m_items->desc = $this->item_desc;
+        // $m_items->unit = strtoupper($this->item_unit);
+        // $m_items->selling_price = $this->selling_price;
+        // $m_items->batch_as = $this->selection_batchas;
+        // $m_items->lock = $this->item_lock;
+        // $m_items->save();
 
         $this->emit('dataChanged1');
 

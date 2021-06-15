@@ -5,7 +5,7 @@
     {{-- NAVIGATION BAR --}}
     <div class="bg-white p-3 flex justify-between dark:border-gray-600">
         <h2 class="mt-1 font-semibold text-xl text-gray-800 leading-tight">
-            Items Movement
+            Other Movement
         </h2>
 
         <div class="flex">
@@ -30,16 +30,18 @@
             <div class="w-full col-span-6">
                 {{-- HEADER --}}
                 <div class="bg-white rounded-md p-2 shadow-md">
+                    
                     <div class="w-1/2">
                         <label for="selected_movkey" class="block text-sm font-medium text-gray-700">Movement Key</label>
                         
                         <x-select wireprop="wire:model=selected_movkey">
                             @foreach ($selection_movkeys as $selection_movkey )
-                                <option value="{{ $selection_movkey->id }}">{{ $selection_movkey->name }}</option>
+                                <option value="{{ $selection_movkey['id'] }}">{{ $selection_movkey['name'] }}</option>
                             @endforeach
                         </x-select>
+                        
                     </div>
-
+                    
                     <div class="mt-1">
                         <x-input myclass="w-1/2" type="date" name="posting_date" wireprop="wire:model.lazy=posting_date" disb="">
                             Posting Date
@@ -100,7 +102,7 @@
                                               </svg>
                                         </div>
                                         <div class="ml-2">
-                                            {{ $item_cart['id'] }}
+                                            {{ $item_cart['show_id'] }}
                                         </div>
                                     </div>
                                     
@@ -120,7 +122,7 @@
                 @if ($selected_cart >= 0)
                     <div class="bg-white rounded-md p-2 shadow-md mt-2">
                         <div class="text-gray-600">
-                            {{ ($selected_cart+1).'-'.$items_cart[$selected_cart]['id'].'-'.$items_cart[$selected_cart]['name'] }}
+                            {{ ($selected_cart+1).'-'.$items_cart[$selected_cart]['show_id'].'-'.$items_cart[$selected_cart]['name'] }}
                         </div>
 
                         <x-input myclass="w-1/2 pr-2 mt-1" type="number" name="item_detail_qty" wireprop="wire:model.lazy=item_detail_qty" disb="">
@@ -134,7 +136,7 @@
                                 
                                 <x-select wireprop="wire:model.defer=from_location">
                                     {@foreach ($selection_to_locations as $selection_to_location )
-                                        <option value="{{ $selection_to_location->id }}">{{ $selection_to_location->name }}</option>
+                                        <option value="{{ $selection_to_location['id'] }}">{{ $selection_to_location['name'] }}</option>
                                     @endforeach
                                 </x-select>
                             </div>
@@ -146,7 +148,7 @@
                                 
                                 <x-select wireprop="wire:model.defer=to_location">
                                     @foreach ($selection_to_locations as $selection_to_location )
-                                        <option value="{{ $selection_to_location->id }}">{{ $selection_to_location->name }}</option>
+                                        <option value="{{ $selection_to_location['id'] }}">{{ $selection_to_location['name'] }}</option>
                                     @endforeach
                                 </x-select>
                             </div>
@@ -157,7 +159,7 @@
                                 
                                 <x-select wireprop="wire:model.defer=to_location">
                                     @foreach ($selection_to_locations as $selection_to_location )
-                                        <option value="{{ $selection_to_location->id }}">{{ $selection_to_location->name }}</option>
+                                        <option value="{{ $selection_to_location['id'] }}">{{ $selection_to_location['name'] }}</option>
                                     @endforeach
                                 </x-select>
                             </div>
@@ -206,7 +208,7 @@
             <div class="col-span-6 ml-2">
                 @if (count($error_list) > 0 )
                     <div class="bg-white rounded-md p-2 shadow-md ">
-                        <p class="text-gray-600">Error:</p>
+                        <p class="text-gray-600">ERROR:</p>
                         @foreach ($error_list as $error)
                             <p class="text-red-500 text-sm">{{ $error['message'] }}</p>
                         @endforeach
@@ -294,7 +296,7 @@
                                                     </svg>
                                                 </div>
                                                 <div class="ml-2">
-                                                    {{ $data_item->id }}
+                                                    {{ $data_item->show_id }}
                                                 </div>
                                             </div>
                                             

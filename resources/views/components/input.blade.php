@@ -9,7 +9,7 @@
         @endif
         
     @else
-        <input type="{{ $type }}" name="{{ $name }}" class="mt-1 block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50" {{ $disb }}>
+        <input type="{{ $type }}" name="{{ $name }}" class="mt-1 block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" {{ $disb }}>
     @endif
 
 </div>

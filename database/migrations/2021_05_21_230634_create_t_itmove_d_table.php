@@ -17,9 +17,9 @@ class CreateTItmoveDTable extends Migration
             $table->unsignedBigInteger('id');
             $table->unsignedBigInteger('item_id');
             $table->unsignedBigInteger('from_loc')->nullable();
-            $table->unsignedBigInteger('to_loc');
+            $table->unsignedBigInteger('to_loc')->nullable();
             $table->unsignedBigInteger('from_batch')->nullable();
-            $table->unsignedBigInteger('to_batch');
+            $table->unsignedBigInteger('to_batch')->nullable();
             $table->double('qty',10,2);
             $table->double('amount', 15, 2)->nullable();
             $table->timestamps();

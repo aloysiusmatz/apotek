@@ -24,7 +24,10 @@ class CreateTItmoveHTable extends Migration
             $table->string('desc')->nullable();
             $table->timestamps();
 
-            
+            $table->foreign('company_id')
+                ->references('id')
+                ->on('companies')
+                ->onDelete('no action');
         });
     }
 

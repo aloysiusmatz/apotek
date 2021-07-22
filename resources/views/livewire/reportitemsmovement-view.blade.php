@@ -108,83 +108,74 @@
                         </div>
                         
                     </div>
-                    <table class="w-full table-auto mt-1">
-                        <thead>
-                            <tr class="text-gray-600 uppercase text-xs leading-normal">
-                                <th wire:click="sortBy(0)" class="sticky top-0 bg-gray-200 border border-gray-400 px-1 py-2 text-left cursor-pointer w-28" >Posting Date</th>
-                                <th wire:click="sortBy(1)" class="sticky top-0 bg-gray-200 border border-gray-400 px-1 py-2 text-left cursor-pointer w-28" >Item Number</th>
-                                <th wire:click="sortBy(2)" class="sticky top-0 bg-gray-200 border border-gray-400 px-1 py-2 text-left cursor-pointer">Name</th>
-                                <th wire:click="sortBy(3)" class="sticky top-0 bg-gray-200 border border-gray-400 px-1 py-2 text-left cursor-pointer w-28" >Movement Key</th>
-                                <th wire:click="sortBy(4)" class="sticky top-0 bg-gray-200 border border-gray-400 px-1 py-2 text-left cursor-pointer w-24" >Qty</th>
-                                <th wire:click="sortBy(5)" class="sticky top-0 bg-gray-200 border border-gray-400 px-1 py-2 text-left cursor-pointer w-28" >Loc</th>
-                                <th wire:click="sortBy(6)" class="sticky top-0 bg-gray-200 border border-gray-400 px-1 py-2 text-left cursor-pointer w-28" >Batch</th>
-                                <th wire:click="sortBy(7)" class="sticky top-0 bg-gray-200 border border-gray-400 px-1 py-2 text-left cursor-pointer w-28" >Create Date</th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-600 text-sm font-light">
-                            @php
-                                $color = false;
-                                $qty = 0;
-                            @endphp
-                            @foreach ($results as $result)
-                            @if ($color)
-                            <tr class="bg-gray-100">
-                            @else
-                            <tr class="">
-                            @endif
-                            
-                                <td class="border border-gray-300 px-1">
-                                    {{ $result['posting_date'] }}
-                                </td>
-                                <td class="border border-gray-300 px-1">
-                                    {{ $result['show_id'] }}
-                                </td>
-                                <td class="border border-gray-300 px-1">
-                                    {{ $result['item_name'] }}
-                                </td>
-                                <td class="border border-gray-300 px-1">
-                                    {{ $result['movement_key'] }}
-                                </td>
-                                <td class="text-right border border-gray-300 px-1">
-                                    {{ number_format($result['qty'],0,',','.')}}
-                                </td>
-                                <td class="border border-gray-300 px-1">
-                                    {{ $result['loc'] }}
-                                </td>
-                                <td class="border border-gray-300 px-1">
-                                    {{ $result['batch'] }}
-                                </td>
-                                <td class="border border-gray-300 px-1">
-                                    {{ $result['created_at'] }}
-                                </td>
-                            </tr>
-                            @php
-                                if($color){
-                                    $color=false;
-                                }else{
-                                    $color=true;
-                                }
+                    <div class="max-h-100 overflow-scroll">
+                        <table class="w-full table-auto mt-1">
+                            <thead>
+                                <tr class="text-gray-600 uppercase text-xs leading-normal">
+                                    <th wire:click="sortBy(0)" class="sticky top-0 bg-gray-200 px-1 py-2 text-left cursor-pointer w-28" >Posting Date</th>
+                                    <th wire:click="sortBy(1)" class="sticky top-0 bg-gray-200 px-1 py-2 text-left cursor-pointer w-28" >Item Number</th>
+                                    <th wire:click="sortBy(2)" class="sticky top-0 bg-gray-200 px-1 py-2 text-left cursor-pointer">Name</th>
+                                    <th wire:click="sortBy(3)" class="sticky top-0 bg-gray-200 px-1 py-2 text-left cursor-pointer w-28" >Movement Key</th>
+                                    <th wire:click="sortBy(4)" class="sticky top-0 bg-gray-200 px-1 py-2 text-right cursor-pointer w-24" >Qty</th>
+                                    <th wire:click="sortBy(5)" class="sticky top-0 bg-gray-200 px-1 py-2 text-left cursor-pointer w-28" >Loc</th>
+                                    <th wire:click="sortBy(6)" class="sticky top-0 bg-gray-200 px-1 py-2 text-left cursor-pointer w-28" >Batch</th>
+                                    <th wire:click="sortBy(7)" class="sticky top-0 bg-gray-200 px-1 py-2 text-left cursor-pointer w-28" >Create Date</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-600 text-sm font-light">
+                                @php
+                                    $color = false;
+                                    $qty = 0;
+                                @endphp
+                                @foreach ($results as $result)
+                                
+                                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                                
+                                    <td class="px-1 py-1">
+                                        {{ $result['posting_date'] }}
+                                    </td>
+                                    <td class="px-1 py-1">
+                                        {{ $result['show_id'] }}
+                                    </td>
+                                    <td class="px-1 py-1">
+                                        {{ $result['item_name'] }}
+                                    </td>
+                                    <td class="px-1 py-1">
+                                        {{ $result['movement_key'] }}
+                                    </td>
+                                    <td class="text-right px-1 py-1">
+                                        {{ number_format($result['qty'],0,',','.')}}
+                                    </td>
+                                    <td class="px-1 py-1">
+                                        {{ $result['loc'] }}
+                                    </td>
+                                    <td class="px-1 py-1">
+                                        {{ $result['batch'] }}
+                                    </td>
+                                    <td class="px-1 py-1">
+                                        {{ $result['created_at'] }}
+                                    </td>
+                                </tr>
+                                
+                                @php
+                                    $qty += $result['qty'];
+                                @endphp
+                                @endforeach
+                                <tr class="bg-yellow-300 font-bold">
+                                    <td colspan="4" class="px-2">
+                                        Total
+                                    </td>
+                                    <td class="text-right px-1">
+                                        {{ $qty }}
+                                    </td>
+                                    <td colspan="3">
 
-                                $qty += $result['qty'];
-                            @endphp
-                            @endforeach
-                            <tr class="bg-yellow-300 font-bold">
-                                <td colspan="4" class="px-2">
-                                    Total
-                                </td>
-                                <td class="text-right px-1">
-                                    {{ $qty }}
-                                </td>
-                                <td colspan="3">
-
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
-
-                
-
 
             </div>
         </div> 

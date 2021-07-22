@@ -19,6 +19,8 @@ class t_itmove_d extends Model
         'from_batch',
         'to_batch',
         'qty',
-        'amount'
+        'amount',
+        'po_id',
+        'po_item_sequence'
     ];
 }

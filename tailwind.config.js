@@ -22,6 +22,10 @@ module.exports = {
             '3/4': '75%',
             'full': '100%',
         },
+
+        maxHeight: {
+            '100': '32rem',
+        },
     },
 
     variants: {

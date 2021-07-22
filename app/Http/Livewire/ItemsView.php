@@ -72,7 +72,7 @@ class ItemsView extends Component
     public function createData1(){
         $this->formatField1();
 
-        $m_items = DB::insert('insert into apotek.m_items(company_id,show_id,category_id,name,`desc` ,unit,selling_price,`lock`,batch_as) values (?, (select IFNULL(max(show_id),1000000)+1 FROM apotek.m_items b where b.company_id = '.session()->get('company_id').'),?,?,?,?,?,?,?)', [
+        $m_items = DB::insert('insert into m_items(company_id,show_id,category_id,name,`desc` ,unit,selling_price,`lock`,batch_as) values (?, (select IFNULL(max(show_id),1000000)+1 FROM m_items b where b.company_id = '.session()->get('company_id').'),?,?,?,?,?,?,?)', [
             session()->get('company_id'), 
             $this->selection_category,
             $this->item_name,

@@ -14,6 +14,7 @@ use App\Http\Controllers\MovementKeyController;
 use App\Http\Controllers\ItemsMovementController;
 use App\Http\Controllers\PurchaseOrderController;
 use App\Http\Controllers\RolesPermissionController;
+use App\Http\Controllers\PurchaseOrderListController;
 use App\Http\Controllers\ReportItemsSummaryController;
 use App\Http\Controllers\ReportItemsMovementController;
 
@@ -42,6 +43,7 @@ Route::middleware(['auth:sanctum', 'verified'])->get('/categories', [CategoriesC
 Route::middleware(['auth:sanctum', 'verified'])->get('/locations', [LocationsController::class, 'index'])->name('locations');
 Route::middleware(['auth:sanctum', 'verified'])->get('/itemsmovement', [ItemsMovementController::class, 'index'])->name('itemsmovement');
 Route::middleware(['auth:sanctum', 'verified'])->get('/purchaseorder', [PurchaseOrderController::class, 'index'])->name('purchaseorder');
+Route::middleware(['auth:sanctum', 'verified'])->get('/purchaseorder_list', [PurchaseOrderListController::class, 'index'])->name('po_list');
 Route::middleware(['auth:sanctum', 'verified'])->get('/report/itemsmovement', [ReportItemsMovementController::class, 'index'])->name('report.itemsmovement');
 Route::middleware(['auth:sanctum', 'verified'])->get('/report/itemssummary', [ReportItemsSummaryController::class, 'index'])->name('report.itemssummary');
 // Route::middleware(['auth:sanctum', 'verified'])->get('/export', [ExportController::class, 'index'])->name('export');

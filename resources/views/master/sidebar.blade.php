@@ -16,7 +16,7 @@
                     <span class="mx-4 font-medium text-sm">Items</span>
                 </a>
 
-                <a class="{{ request()->is('categories') ? "flex items-center px-2 py-1 mt-2 text-gray-700 bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-200" : "flex items-center px-2 py-1 mt-2 text-gray-600 transition-colors duration-200 transform rounded-md dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-200 hover:text-gray-700" }}" href="{{route('categories')}}">
+                <a class="{{ request()->is('categories') ? "flex items-center px-2 py-1 mt-1 text-gray-700 bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-200" : "flex items-center px-2 py-1 mt-1 text-gray-600 transition-colors duration-200 transform rounded-md dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-200 hover:text-gray-700" }}" href="{{route('categories')}}">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M16 7C16 9.20914 14.2091 11 12 11C9.79086 11 8 9.20914 8 7C8 4.79086 9.79086 3 12 3C14.2091 3 16 4.79086 16 7Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     <path d="M12 14C8.13401 14 5 17.134 5 21H19C19 17.134 15.866 14 12 14Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -25,7 +25,7 @@
                     <span class="mx-4 font-medium text-sm">Categories</span>
                 </a>
 
-                <a class="{{ request()->is('locations') ? "flex items-center px-2 py-1 mt-2 text-gray-700 bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-200" : "flex items-center px-2 py-1 mt-2 text-gray-600 transition-colors duration-200 transform rounded-md dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-200 hover:text-gray-700" }}" href="{{route('locations')}}">
+                <a class="{{ request()->is('locations') ? "flex items-center px-2 py-1 mt-1 text-gray-700 bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-200" : "flex items-center px-2 py-1 mt-1 text-gray-600 transition-colors duration-200 transform rounded-md dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-200 hover:text-gray-700" }}" href="{{route('locations')}}">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M15 5V7M15 11V13M15 17V19M5 5C3.89543 5 3 5.89543 3 7V10C4.10457 10 5 10.8954 5 12C5 13.1046 4.10457 14 3 14V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V14C19.8954 14 19 13.1046 19 12C19 10.8954 19.8954 10 21 10V7C21 5.89543 20.1046 5 19 5H5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>
@@ -44,6 +44,13 @@
                     </svg>
     
                     <span class="mx-4 font-medium text-sm">Create Order</span>
+                </a>
+                <a class="{{ request()->is('purchaseorder_list') ? "flex items-center px-2 py-1 mt-1 text-gray-700 bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-200" : "flex items-center px-2 py-1 mt-1 text-gray-600 transition-colors duration-200 transform rounded-md dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-200 hover:text-gray-700" }}" href="{{route('po_list')}}">
+                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M15 5V7M15 11V13M15 17V19M5 5C3.89543 5 3 5.89543 3 7V10C4.10457 10 5 10.8954 5 12C5 13.1046 4.10457 14 3 14V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V14C19.8954 14 19 13.1046 19 12C19 10.8954 19.8954 10 21 10V7C21 5.89543 20.1046 5 19 5H5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+    
+                    <span class="mx-4 font-medium text-sm">Order List</span>
                 </a>
             </div>
 
@@ -68,7 +75,7 @@
     
                     <span class="mx-4 font-medium text-sm">Item Movements</span>
                 </a>
-                <a class="{{ request()->is('report/itemssummary') ? "flex items-center px-2 py-1 mt-2 text-gray-700 bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-200" : "flex items-center px-2 py-1 mt-2 text-gray-600 transition-colors duration-200 transform rounded-md dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-200 hover:text-gray-700" }}" href="{{route('report.itemssummary')}}">
+                <a class="{{ request()->is('report/itemssummary') ? "flex items-center px-2 py-1 mt-1 text-gray-700 bg-gray-200 rounded-md dark:bg-gray-700 dark:text-gray-200" : "flex items-center px-2 py-1 mt-1 text-gray-600 transition-colors duration-200 transform rounded-md dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-gray-200 hover:text-gray-700" }}" href="{{route('report.itemssummary')}}">
                     <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M15 5V7M15 11V13M15 17V19M5 5C3.89543 5 3 5.89543 3 7V10C4.10457 10 5 10.8954 5 12C5 13.1046 4.10457 14 3 14V17C3 18.1046 3.89543 19 5 19H19C20.1046 19 21 18.1046 21 17V14C19.8954 14 19 13.1046 19 12C19 10.8954 19.8954 10 21 10V7C21 5.89543 20.1046 5 19 5H5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     </svg>

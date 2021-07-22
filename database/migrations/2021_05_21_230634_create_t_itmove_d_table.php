@@ -22,6 +22,8 @@ class CreateTItmoveDTable extends Migration
             $table->unsignedBigInteger('to_batch')->nullable();
             $table->double('qty',10,2);
             $table->double('amount', 15, 2)->nullable();
+            $table->unsignedBigInteger('po_id')->nullable();
+            $table->integer('po_item_sequence')->nullable();
             $table->timestamps();
 
             $table->foreign('id')

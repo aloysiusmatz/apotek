@@ -2,6 +2,8 @@
 
 namespace App\Http\Livewire;
 
+use App\Models\t_po_d;
+use App\Models\t_po_h;
 use App\Models\m_items;
 use Livewire\Component;
 use App\Models\m_vendors;
@@ -13,6 +15,8 @@ class PurchaseorderView extends Component
     public $po_number;
     public $vendor;
     public $payment_terms;
+    public $error_list=[];
+    public $success_message='';
 
     public $items_cart=[];
     public $selected_cart=-1;
@@ -49,10 +53,27 @@ class PurchaseorderView extends Component
         }
         
         if(count($this->selected_vendor) >=1 ){
-            $this->vendor = $this->selected_vendor['id'].' - '.$this->selected_vendor['name'];
+            $this->vendor = $this->selected_vendor['show_id'].' - '.$this->selected_vendor['name'];
         }
 
         return view('livewire.purchaseorder-view');
+    }
+
+    public function initField(){
+        $this->delivery_date='';
+        $this->po_number='';
+        $this->vendor='';
+        $this->payment_terms='';
+        $this->error_list=[];
+    
+        $this->items_cart=[];
+        $this->selected_cart=-1;
+        $this->item_qty=0;
+        $this->item_discount=0;
+        $this->item_priceunit=0;
+        $this->item_tax=0;
+    
+        $this->selected_vendor=[];
     }
 
     public function toogleVendorModal(){
@@ -92,21 +113,43 @@ class PurchaseorderView extends Component
                 ->get();
         
         $this->selected_vendor['id'] = $m_vendors->first()->id;
+        $this->selected_vendor['show_id'] = $m_vendors->first()->show_id;
         $this->selected_vendor['name'] = $m_vendors->first()->name;
         $this->toogleVendorModal();
         $this->search_vendor='';
     }
 
     public function createVendor(){
-        $m_vendors = new m_vendors;
-        $m_vendors->company_id = session()->get('company_id');
-        $m_vendors->name = $this->search_vendor;
-        $m_vendors->save();
+        // $m_vendors = new m_vendors;
 
-        $this->toogleVendorModal();
-        $this->selected_vendor['id'] = $m_vendors->id;
-        $this->selected_vendor['name'] = $m_vendors->name;
-        $this->search_vendor = '';
+        DB::transaction(function () {
+            
+            $select_show_id = "select IFNULL(max(show_id), 2000000)+1 as id from m_vendors b WHERE b.company_id='".session()->get('company_id')."' for share";
+
+            $show_id = DB::select($select_show_id)[0]->id;
+
+            $m_vendors = m_vendors::create([
+                'company_id' => session()->get('company_id'),
+                'show_id' => $show_id,
+                'name' => $this->search_vendor
+            ]);
+
+            $this->toogleVendorModal();
+            $this->selected_vendor['id'] = $m_vendors->id;
+            $this->selected_vendor['show_id'] = $show_id;
+            $this->selected_vendor['name'] = $m_vendors->name;
+            $this->search_vendor = '';
+        });
+        
+        // $m_vendors = DB::insert('insert into m_vendors(company_id,show_id,name,created_at) values(?,(select IFNULL(max(show_id), 2000000)+1 from m_vendors b WHERE b.company_id='.session()->get('company_id').'),?,now())',[
+        //     session()->get('company_id'),
+        //     $this->search_vendor
+        // ]);
+        
+        // $m_vendors->company_id = session()->get('company_id');
+        // $m_vendors->name = $this->search_vendor;
+        // $m_vendors->save();
+
 
     }
 
@@ -136,6 +179,7 @@ class PurchaseorderView extends Component
             $this->saveItem();
             $this->items_cart[$count] = [
                 'id' => $id, 
+                'show_id' => $m_items->show_id,
                 'name' => $m_items->name,
                 'qty' => 1,
                 'priceunit' => 0,
@@ -147,6 +191,7 @@ class PurchaseorderView extends Component
         }else{
             $this->items_cart[0] = [
                 'id' => $id, 
+                'show_id' => $m_items->show_id,
                 'name' => $m_items->name,
                 'qty' => 1,
                 'priceunit' => 0,
@@ -209,6 +254,14 @@ class PurchaseorderView extends Component
         $this->selected_cart=-1;
     }
 
+    public function closeNotif(){
+        $this->error_list=[];   
+    }
+
+    public function closeSuccess(){
+        $this->success_message='';
+    }
+
     public function add_error_message($message){
         $count = count($this->error_list);
         $this->error_list[$count] = [
@@ -217,6 +270,88 @@ class PurchaseorderView extends Component
         ];
     }
 
-    
+    public function savePO(){
+        if ($this->selected_cart>=0) {
+            $this->saveItem();
+        }
+        
+        $error = false;
+        //CEK INPUT
+        if ($this->delivery_date == '') {
+            $this->add_error_message("Delivery date can't be empty");
+            $error = true;
+        }
+        if(count($this->selected_vendor) ==0 ){
+            $this->add_error_message("Select a vendor");
+            $error = true;
+        }
+        if ($this->payment_terms == ''){
+            $this->add_error_message("Payment terms can't be empty");
+            $error = true;
+        }
+        if(count($this->items_cart)==0){
+            $this->add_error_message("Select at least 1 item");
+            $error = true;
+        }
+        $index=0;
+        foreach ($this->items_cart as $item) {
+            if ($item['qty']==0 || $item['priceunit']==0) {
+                $message = "Line no ".($index+1)." field qty or price can't be 0";
+                $this->add_error_message($message);
+                $error = true;
+            }
+            $index++;
+        }
+        if ($error) {
+            return false;
+        }
+        
+        DB::transaction(function () {
+
+            $grand_total = 0;
+            foreach ($this->items_cart as $item) {
+                $grand_total += $item['totalprice'];
+            }
+            
+            //PO HEADER
+            $select_show_id = "select ifnull(max(po_show_id),3000000)+1 as id from t_po_h where company_id='".session()->get('company_id')."' for share";
+
+            $show_id = DB::select($select_show_id)[0]->id;
+            
+            $t_po_h = t_po_h::create([
+                'company_id' => session()->get('company_id'),
+                'po_show_id' => $show_id,
+                'delivery_date' => $this->delivery_date,
+                'vendor_id' => $this->selected_vendor['id'],
+                'payment_terms' => $this->payment_terms,
+                'grand_total' => $grand_total,
+                'deleted' => 0,
+                'print' => 0
+            ]);
+            
+            //PO ITEM
+            $index=0;
+            foreach ($this->items_cart as $item) {
+                $t_po_d = t_po_d::create([
+                    'id' => $t_po_h->id,
+                    'item_sequence' => $index+1,
+                    'item_id' => $item['id'],
+                    'qty' => $item['qty'],
+                    'price_unit' => $item['priceunit'],
+                    'discount' => $item['discount'],
+                    'tax' => $item['tax'],
+                    'final_delivery' => 0
+                ]);
+
+                $index++;
+            }
+             
+            $this->success_message = 'PO number '.$show_id.' created';
+        });
+        
+        // dd($this->success_message);
+        $this->initField();
+        
+    }
 
 }

@@ -8,15 +8,80 @@
             Purchase Order
         </h2>
 
-        <div class="flex">
-            @if (session()->has('message'))
-            <div class=" alert alert-success px-2 py-1 text-green-500 rounded-md text-sm text-center font-bold">
-                {{ session('message') }}
+        @if (count($error_list)>0)
+        <div class=" w-auto shadow-lg rounded-lg bg-red-100 mx-auto p-4 notification-box flex absolute right-5">
+            <div class="pr-2">
+              <svg
+                class="fill-current text-red-600"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                width="24"
+                height="24"
+              >
+                <path
+                  class="heroicon-ui"
+                  d="M12 2a10 10 0 1 1 0 20 10 10 0 0 1 0-20zm0 2a8 8 0 1 0 0 16 8 8 0 0 0 0-16zm0 9a1 1 0 0 1-1-1V8a1 1 0 0 1 2 0v4a1 1 0 0 1-1 1zm0 4a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"
+                />
+              </svg>
             </div>
-            @endif
-
-           
+            <div>
+              <div class="text-sm pb-2">
+                Check your input
+                <span class="float-right">
+                  <svg wire:click="closeNotif"
+                    class="fill-current text-gray-600 cursor-pointer"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                  >
+                    <path
+                      class="heroicon-ui"
+                      d="M16.24 14.83a1 1 0 0 1-1.41 1.41L12 13.41l-2.83 2.83a1 1 0 0 1-1.41-1.41L10.59 12 7.76 9.17a1 1 0 0 1 1.41-1.41L12 10.59l2.83-2.83a1 1 0 0 1 1.41 1.41L13.41 12l2.83 2.83z"
+                    />
+                  </svg>
+                </span>
+              </div>
+              <div class="text-sm text-gray-600  tracking-tight ">
+                @foreach ($error_list as $error )
+                    <p>- {{ $error['message'] }}</p>
+                @endforeach
+              </div>
+            </div>
         </div>
+        @endif
+
+        @if ($success_message!='')
+        <div class=" w-auto shadow-lg rounded-lg bg-green-100 mx-auto p-4 notification-box flex absolute right-5">
+            <div class="pr-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div>
+              <div class="pb-2">
+                <span class="text-green-800">Success</span> 
+                <span class="float-right">
+                  <svg wire:click="closeSuccess"
+                    class="fill-current text-gray-600 cursor-pointer"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="22"
+                    height="22"
+                  >
+                    <path
+                      class="heroicon-ui"
+                      d="M16.24 14.83a1 1 0 0 1-1.41 1.41L12 13.41l-2.83 2.83a1 1 0 0 1-1.41-1.41L10.59 12 7.76 9.17a1 1 0 0 1 1.41-1.41L12 10.59l2.83-2.83a1 1 0 0 1 1.41 1.41L13.41 12l2.83 2.83z"
+                    />
+                  </svg>
+                </span>
+              </div>
+              <div class="text-sm text-gray-600  tracking-tight ">
+                    <p>{{ $success_message }}</p>
+              </div>
+            </div>
+        </div>
+        @endif
        
         
     </div>
@@ -46,7 +111,7 @@
                         </div>
                         
 
-                        <button class="px-3 py-1 h-8 bg-green-600 hover:bg-green-500 shadow-md rounded-md text-white font-semibold text-sm" wire:click="savePO">
+                        <button wire:click="savePO" class="px-3 py-1 h-8 bg-green-600 hover:bg-green-500 shadow-md rounded-md text-white font-semibold text-sm" wire:click="savePO">
                             Save PO
                         </button>
                     </div>
@@ -122,7 +187,7 @@
                                     {{ $index+1 }}
                                 </td>
                                 <td class=" py-2 px-2 text-left cursor-pointer">
-                                    {{ $item_cart['id'] }}
+                                    {{ $item_cart['show_id'] }}
                                 </td>
                                 <td class="py-2 px-2 text-left cursor-pointer">
                                     {{ $item_cart['name'] }}
@@ -294,7 +359,7 @@
                                                     </svg>
                                                 </div>
                                                 <div class="ml-2">
-                                                    {{ $data_item->id }}
+                                                    {{ $data_item->show_id }}
                                                 </div>
                                             </div>
                                             
@@ -395,7 +460,7 @@
                                                 </svg>
                                             </div>
                                             <div class="ml-2">
-                                                {{ $data->id }}
+                                                {{ $data->show_id }}
                                             </div>
                                         </div>
                                         

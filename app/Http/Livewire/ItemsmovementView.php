@@ -747,12 +747,12 @@ class ItemsmovementView extends Component
                                         );
 
                     $update_m_items = DB::table('m_items')
-                                        ->where('item_id', $item_cart['id'])
+                                        ->where('id', $item_cart['id'])
                                         ->where('company_id', session()->get('company_id'))
-                                        ->update(
-                                            ['total_qty' => $total_qty],
-                                            ['total_amount' => $total_amount]
-                                        );
+                                        ->update([
+                                                'total_qty' => $total_qty,
+                                                'total_amount' => $total_amount
+                                            ]);
 
                     $index++;
                 }
@@ -815,16 +815,16 @@ class ItemsmovementView extends Component
                     $update_itmove_d = DB::table('t_itmove_d')
                                         ->where('id',$t_itmove_h->id)
                                         ->update(
-                                            ['amount' => $$amount_itmove_d]
+                                            ['amount' => $amount_itmove_d]
                                         );
 
                     $update_m_items = DB::table('m_items')
-                                        ->where('item_id', $item_cart['id'])
+                                        ->where('id', $item_cart['id'])
                                         ->where('company_id', session()->get('company_id'))
-                                        ->update(
-                                            ['total_qty' => $total_qty],
-                                            ['total_amount' => $total_amount]
-                                        );
+                                        ->update([
+                                            'total_qty' => $total_qty,
+                                            'total_amount' => $total_amount
+                                        ]);
 
                     $index++;
                 }

@@ -14,13 +14,15 @@ class CreateTPoHTable extends Migration
     public function up()
     {
         Schema::create('t_po_h', function (Blueprint $table) {
-            $table->id()->startingValue('3000001');
+            $table->id();
             $table->unsignedBigInteger('company_id');
-            $table->unsignedBigInteger('show_id');
+            $table->unsignedBigInteger('po_show_id');
             $table->date('delivery_date');
             $table->unsignedBigInteger('vendor_id');
             $table->string('payment_terms');
             $table->double('grand_total',15,2);
+            $table->boolean('deleted');
+            $table->integer('print');
             $table->timestamps();
 
             $table->foreign('company_id')

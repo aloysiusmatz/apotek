@@ -14,13 +14,14 @@ class CreateTPoDTable extends Migration
     public function up()
     {
         Schema::create('t_po_d', function (Blueprint $table) {
-            $table->id();
-            $table->integer('item_sequnce');
+            $table->unsignedBigInteger('id');
+            $table->integer('item_sequence');
             $table->unsignedBigInteger('item_id');
             $table->double('qty',10,2);
             $table->double('price_unit',15,2);
             $table->integer('discount');
             $table->integer('tax');
+            $table->boolean('final_delivery');
             $table->timestamps();
 
             $table->foreign('id')
@@ -32,6 +33,8 @@ class CreateTPoDTable extends Migration
                 ->references('id')
                 ->on('m_items')
                 ->onDelete('no action');
+
+            $table->primary(['id','item_sequence'],'t_po_d_primary');
         });
     }
 

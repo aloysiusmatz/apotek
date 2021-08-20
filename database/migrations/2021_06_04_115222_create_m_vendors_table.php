@@ -19,6 +19,8 @@ class CreateMVendorsTable extends Migration
             $table->unsignedBigInteger('show_id');
             $table->string('name',35);
             $table->string('address')->nullable();
+            $table->text('city')->nullable();
+            $table->text('country')->nullable();
             $table->string('phone')->nullable();
             $table->string('alt_phone1')->nullable();
             $table->string('alt_phone2')->nullable();

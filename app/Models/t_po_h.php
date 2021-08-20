@@ -22,6 +22,15 @@ class t_po_h extends Model
         'payment_terms',
         'grand_total',
         'deleted',
-        'print'
+        'print',
+        'ship_to_address',
+        'ship_to_city',
+        'ship_to_country',
+        'ship_to_postal_code',
+        'ship_to_phone1',
+        'ship_to_phone2',
+        'shipping_value',
+        'others_value',
+        'note'
     ];
 }

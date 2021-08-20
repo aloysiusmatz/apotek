@@ -23,6 +23,15 @@ class CreateTPoHTable extends Migration
             $table->double('grand_total',15,2);
             $table->boolean('deleted');
             $table->integer('print');
+            $table->string('ship_to_address');
+            $table->string('ship_to_city', 25);
+            $table->string('ship_to_country', 25);
+            $table->string('ship_to_postal_code', 25);
+            $table->string('ship_to_phone1', 25);
+            $table->string('ship_to_phone2', 25);
+            $table->double('shipping_value',15,2);
+            $table->double('others_value',15,2);
+            $table->text('note');
             $table->timestamps();
 
             $table->foreign('company_id')

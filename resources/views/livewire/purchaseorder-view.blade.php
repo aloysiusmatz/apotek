@@ -201,9 +201,13 @@
                                 </td>
                                 <td class="py-2 px-2 text-left cursor-pointer">
                                     @if ($selected_cart==$index)
-                                    <input type="number" class="block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50" wire:model.lazy="item_priceunit">
+                                        {{-- <div class="relative">
+                                            <span class="absolute inset-y-0 pt-2 left-2">{{ session()->get('currency_symbol') }}</span>
+                                            <input type="number" class="block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 pl-8" wire:model.lazy="item_priceunit">
+                                        </div> --}}
+                                        <x-input-currency wireprop="wire:model.lazy=item_priceunit"></x-input-currency>
                                     @else
-                                        {{ number_format($item_cart['priceunit'],0,',','.') }}
+                                        {{ session()->get('currency_symbol').' '.number_format($item_cart['priceunit'],session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator')) }}
                                     @endif
                                 </td>                                
                                 <td class="py-2 px-2 text-left cursor-pointer">
@@ -218,16 +222,16 @@
                                 </td>
                                 <td class="py-2 px-2 text-left cursor-pointer">
                                     @if ($selected_cart==$index)
-                                    <input type="number" class="block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" wire:model.lazy="item_tax">
+                                        <input type="number" class="block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" wire:model.lazy="item_tax">
                                     @else
                                         {{ $item_cart['tax'] }}&nbsp%
                                     @endif
                                 </td>
                                 <td class="py-2 px-2 text-left cursor-pointer">
                                     @if ($selected_cart==$index)
-                                    {{ number_format($item_qty*$item_priceunit*((100-$item_discount)/100)*(($item_tax+100)/100),0,',','.') }}
+                                    {{ session()->get('currency_symbol').' '.number_format($item_qty*$item_priceunit*((100-$item_discount)/100)*(($item_tax+100)/100),session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator')) }}
                                     @else
-                                    {{ number_format($item_cart['totalprice'],0,',','.') }}
+                                    {{ session()->get('currency_symbol').' '.number_format($item_cart['totalprice'],session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator')) }}
                                     @endif
                                     
                                 </td>
@@ -279,7 +283,7 @@
                     }
                 }
             @endphp
-            <p class="text-7xl font-mono">{{ number_format($grandtotal,0,',','.') }}</p>
+            <p class="text-7xl font-mono">{{ session()->get('currency_symbol').' '.number_format($grandtotal,session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator')) }}</p>
         </div>
     </div>
     {{-- END FOOTER --}}

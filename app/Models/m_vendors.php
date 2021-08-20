@@ -14,6 +14,8 @@ class m_vendors extends Model
         'show_id',
         'name',
         'address',
+        'city',
+        'country',
         'phone',
         'alt_phone1',
         'alt_phone2'

@@ -64,6 +64,46 @@
                     <x-input myclass="" type="text" name="altphone" wireprop="wire:model.lazy=altphone" disb="">
                         Alt. Phone
                     </x-input>
+
+                    <x-input myclass="" type="text" name="city" wireprop="wire:model.lazy=city" disb="">
+                        City
+                    </x-input>
+
+                    <x-input myclass="" type="text" name="country" wireprop="wire:model.lazy=country" disb="">
+                        Country
+                    </x-input>
+
+                    <x-input myclass="" type="text" name="postal_code" wireprop="wire:model.lazy=postal_code" disb="">
+                        Postal Code
+                    </x-input>
+
+                    <x-input myclass="" type="text" name="currency" wireprop="wire:model.lazy=currency" disb="">
+                        Currency
+                    </x-input>
+
+                    <x-input myclass="" type="text" name="currency_symbol" wireprop="wire:model.lazy=currency_symbol" disb="">
+                        Currency Symbol
+                    </x-input>
+
+                    <x-input myclass="" type="text" name="default_tax" wireprop="wire:model.lazy=default_tax" disb="">
+                        Default Tax
+                    </x-input>
+
+                    <x-input myclass="" type="text" name="decimal_display" wireprop="wire:model.lazy=decimal_display" disb="">
+                        Decimal Display
+                    </x-input>
+
+                    <x-input myclass="" type="text" name="thousands_separator" wireprop="wire:model.lazy=thousands_separator" disb="">
+                        Thousands Separator
+                    </x-input>
+
+                    <x-input myclass="" type="text" name="decimal_separator" wireprop="wire:model.lazy=decimal_separator" disb="">
+                        Decimal Separator
+                    </x-input>
+
+                    <x-input myclass="" type="text" name="qty_decimal" wireprop="wire:model.lazy=qty_decimal" disb="">
+                        Decimal Places for Qty
+                    </x-input>
                     
                     <x-checkbox-active wireprop="wire:model=active">Active</x-checkbox-active>
 

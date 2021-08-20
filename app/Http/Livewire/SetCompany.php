@@ -36,6 +36,13 @@ class SetCompany extends Component
 
         session()->put('company_id', $this->selection_company);
         session()->put('company_code', $data->company_code);
+        session()->put('default_tax', $data->default_tax);
+        session()->put('decimal_display', $data->decimal_display);
+        session()->put('thousands_separator', $data->thousands_separator);
+        session()->put('decimal_separator', $data->decimal_separator);
+        session()->put('qty_decimal', $data->decimal_separator);
+        session()->put('database_decimal_separator', '.');
+        session()->put('currency_symbol', $data->currency_symbol);
         
         return redirect()->to(route('items'));
     }

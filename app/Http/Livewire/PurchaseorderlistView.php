@@ -5,6 +5,7 @@ namespace App\Http\Livewire;
 use Livewire\Component;
 use App\Models\m_vendors;
 use App\Models\m_locations;
+use App\Traits\GeneralFunctions;
 use App\Traits\InventoryMovement;
 use Illuminate\Support\Facades\DB;
 
@@ -43,16 +44,35 @@ class PurchaseorderlistView extends Component
     public $modal2_poitem_price;
     public $modal2_poitem_disc;
     public $modal2_poitem_tax;
+    public $modal2_poitem_subtotal;
+    public $modal2_grand_total;
+    public $modal2_shipping_value=0;
+    public $modal2_others_value=0;
+    public $modal2_note='';
+    public $modal2_shipto_address='';
+    public $modal2_shipto_city='';
+    public $modal2_shipto_country='';
+    public $modal2_shipto_postalcode='';
+    public $modal2_shipto_phone1='';
+    public $modal2_shipto_phone2='';
     public $modal2_message='';
+
+    public $modal3=false;
+    public $modal3_title='';
+    public $modal3_datas=[];
+    public $modal3_po='';
+    public $modal3_companies=[];
     
     use InventoryMovement;
-
+    use GeneralFunctions;
+    
     public function mount(){
         $this->initSort();
     }
 
     public function render()
     {
+        
         if ($this->modal1_date!='') {
             $this->modal1_message_date = '';
         }
@@ -61,6 +81,10 @@ class PurchaseorderlistView extends Component
             $this->searchAddItemQuery($this->modal2_additem_query);
         }else{
             $this->modal2_search_item_result=[];
+        }
+
+        if($this->modal2){
+            $this->formatInputModal2();
         }
 
         return view('livewire.purchaseorderlist-view');
@@ -90,7 +114,48 @@ class PurchaseorderlistView extends Component
         $this->modal2_poitem_price=[];
         $this->modal2_poitem_disc=[];
         $this->modal2_poitem_tax=[];
+        $this->modal2_poitem_subtotal=[];
+        $this->modal2_grand_total;
+        $this->modal2_shipping_value=0;
+        $this->modal2_others_value=0;
+        $this->modal2_note='';
+        $this->modal2_shipto_address='';
+        $this->modal2_shipto_city='';
+        $this->modal2_shipto_country='';
+        $this->modal2_shipto_postalcode='';
+        $this->modal2_shipto_phone1='';
+        $this->modal2_shipto_phone2='';        
         $this->modal2_message='';
+    }
+
+    public function initModal3(){
+        $this->modal3=false;
+        $this->modal3_title='';
+        $this->modal3_datas=[];
+        $this->modal3_po='';
+    }
+
+    public function formatInputModal2(){
+        $this->modal2_grand_total=0;
+        $index=0;
+        foreach ($this->modal2_datas as $data) {
+            $subtotal = ($this->qtyFormatInput($this->modal2_poitem_qty[$data['item_sequence']])*$this->currencyFormatInput($this->modal2_poitem_price[$data['item_sequence']]))*
+            ((100-$this->modal2_poitem_disc[$data['item_sequence']])/100)*
+            ((100+$this->modal2_poitem_tax[$data['item_sequence']])/100);
+            $index++;
+            $this->modal2_poitem_subtotal[$data['item_sequence']] = $subtotal;
+            $this->modal2_grand_total += $subtotal;
+        }
+
+        if($this->modal2_shipping_value==''){
+            $this->modal2_shipping_value = 0;
+        }
+        if($this->modal2_others_value==''){
+            $this->modal2_others_value = 0;
+        }
+        $this->modal2_grand_total += $this->currencyFormatInput($this->modal2_shipping_value);
+        $this->modal2_grand_total += $this->currencyFormatInput($this->modal2_others_value);
+
     }
 
     public function initSort(){
@@ -129,7 +194,7 @@ class PurchaseorderlistView extends Component
         
         $query = "
         select tpd.id as 'po_number', tpd.item_sequence , tpd.item_id , tpd.qty , tpd.final_delivery as 'dlv', 
-        tph.po_show_id, tph.delivery_date, tph.vendor_id, mi.name as 'item_name', mi.show_id as 'item_show_id' ,mv.name as 'vendor_name'
+        tph.po_show_id, tph.delivery_date, tph.vendor_id, mi.name as 'item_name', mi.show_id as 'item_show_id' , mv.show_id as 'vendor_show_id', mv.name as 'vendor_name'
         from t_po_d tpd, t_po_h tph, m_items mi, m_vendors mv 
         WHERE 
         tpd.id = tph.id and
@@ -274,10 +339,11 @@ class PurchaseorderlistView extends Component
         
     
         $query = "
-        select a.*, b.show_id as 'item_show_id', b.name as 'item_name'
+        select a.*, b.show_id as 'item_show_id', b.name as 'item_name', b.unit as 'item_unit'
         from t_po_d a
         left join m_items b on a.item_id = b.id
         where a.id = '".$po_number."'
+        and company_id = '".session()->get('company_id')."'
         order by a.item_sequence asc
         for share
         ";
@@ -288,13 +354,14 @@ class PurchaseorderlistView extends Component
         foreach ($t_po_d as $data) {
             $modal2_datas[$index] = (array) $data;
             $modal2_datas[$index]['deleted'] = 0;
-            $this->modal2_poitem_qty[$data->item_sequence] = $data->qty;
-            $this->modal2_poitem_price[$data->item_sequence] = $data->price_unit;
+            
+            $this->modal2_poitem_qty[$data->item_sequence] = $this->qtyFormatOutput($data->qty);
+            $this->modal2_poitem_price[$data->item_sequence] = $this->currencyFormatOutput($data->price_unit);
             $this->modal2_poitem_disc[$data->item_sequence] = $data->discount;
             $this->modal2_poitem_tax[$data->item_sequence] = $data->tax;
             $index++;
         }
-        
+
         $m_vendors = m_vendors::find($t_po_h->first()->vendor_id);
         
         $this->modal2 = true;
@@ -304,7 +371,16 @@ class PurchaseorderlistView extends Component
         $this->modal2_vendor = $m_vendors->show_id.'-'.$m_vendors->name;
         $this->modal2_payment_terms = $t_po_h->first()->payment_terms;
         $this->modal2_datas = $modal2_datas;
-        
+        $this->modal2_shipping_value = $t_po_h->first()->shipping_value;
+        $this->modal2_others_value = $t_po_h->first()->others_value;
+        $this->modal2_note=$t_po_h->first()->note;
+        $this->modal2_shipto_address=$t_po_h->first()->ship_to_address;
+        $this->modal2_shipto_city=$t_po_h->first()->ship_to_city;
+        $this->modal2_shipto_country=$t_po_h->first()->ship_to_country;
+        $this->modal2_shipto_postalcode=$t_po_h->first()->ship_to_postal_code;
+        $this->modal2_shipto_phone1=$t_po_h->first()->ship_to_phone1;
+        $this->modal2_shipto_phone2=$t_po_h->first()->ship_to_phone2;
+        $this->modal2_note=$t_po_h->first()->note;
     }
 
     public function deleteItemEditPO($index){
@@ -345,7 +421,7 @@ class PurchaseorderlistView extends Component
         }else {
             $m_items = $m_items->first();
         }
-
+        
         $index = count($this->modal2_datas);
         $new_item_sequence = $this->modal2_datas[$index-1]['item_sequence']+1;
         $this->modal2_datas[$index]['id'] = $this->modal2_po;
@@ -354,7 +430,7 @@ class PurchaseorderlistView extends Component
         $this->modal2_datas[$index]['qty'] = 0;
         $this->modal2_datas[$index]['price_unit'] = 0;
         $this->modal2_datas[$index]['discount'] = 0;
-        $this->modal2_datas[$index]['tax'] = 10;
+        $this->modal2_datas[$index]['tax'] = session()->get('default_tax');
         $this->modal2_datas[$index]['final_delivery'] = 0; 
         $this->modal2_datas[$index]['created_at'] = '';
         $this->modal2_datas[$index]['updated_at'] = '';
@@ -365,7 +441,7 @@ class PurchaseorderlistView extends Component
         $this->modal2_poitem_qty[$new_item_sequence] = 0;
         $this->modal2_poitem_price[$new_item_sequence] = 0;
         $this->modal2_poitem_disc[$new_item_sequence] = 0;
-        $this->modal2_poitem_tax[$new_item_sequence] = 10;
+        $this->modal2_poitem_tax[$new_item_sequence] = session()->get('default_tax');
 
         $this->searchAddItemReset();
     }
@@ -398,6 +474,8 @@ class PurchaseorderlistView extends Component
     }
 
     public function saveEditPO(){
+        
+
         //cek input
         $error = false;
         foreach ($this->modal2_datas as $data) {
@@ -405,9 +483,9 @@ class PurchaseorderlistView extends Component
             //     $error = true;
             //     $this->modal2_message = 'Error: Price unit for PO item '.$data['item_sequence'].' cannot be 0';
             // }
-            if ($this->modal2_poitem_qty[$data['item_sequence']]==0) {
+            if ($this->modal2_poitem_qty[$data['item_sequence']]<=0) {
                 $error = true;
-                $this->modal2_message = 'Error: Qty for PO item '.$data['item_sequence'].' cannot be 0';
+                $this->modal2_message = 'Error: Qty for PO item '.$data['item_sequence'].' cannot be less or equal to 0';
             }
             
         }
@@ -430,7 +508,7 @@ class PurchaseorderlistView extends Component
                     [
                         'item_id' => $data['item_id'],
                         'qty' => $this->modal2_poitem_qty[$data['item_sequence']],
-                        'price_unit' => $this->modal2_poitem_price[$data['item_sequence']],
+                        'price_unit' => $this->currencyFormatInput($this->modal2_poitem_price[$data['item_sequence']]),
                         'discount' => $this->modal2_poitem_disc[$data['item_sequence']],
                         'tax' => $this->modal2_poitem_tax[$data['item_sequence']],
                         'final_delivery' => $data['final_delivery'],
@@ -440,18 +518,29 @@ class PurchaseorderlistView extends Component
             }
           
             $grand_total += 
-            ($this->modal2_poitem_qty[$data['item_sequence']]*$this->modal2_poitem_price[$data['item_sequence']])*
+            ($this->currencyFormatInput($this->modal2_poitem_qty[$data['item_sequence']])*$this->currencyFormatInput($this->modal2_poitem_price[$data['item_sequence']]))*
             ((100-$this->modal2_poitem_disc[$data['item_sequence']])/100)*
             ((100+$this->modal2_poitem_tax[$data['item_sequence']])/100);
             
         }
-       
+        
+        $grand_total = $grand_total + $this->modal2_shipping_value + $this->modal2_others_value;
+
         DB::table('t_po_h')
             ->where('id', $this->modal2_po)
             ->update([
                 'delivery_date' => $this->modal2_delivery_date,
                 'payment_terms' => $this->modal2_payment_terms,
                 'grand_total' => $grand_total,
+                'ship_to_address' => $this->modal2_shipto_address,
+                'ship_to_city' => $this->modal2_shipto_city,
+                'ship_to_country' => $this->modal2_shipto_country,
+                'ship_to_postal_code' => $this->modal2_shipto_postalcode,
+                'ship_to_phone1' => $this->modal2_shipto_phone1,
+                'ship_to_phone2' => $this->modal2_shipto_phone2,
+                'shipping_value' => $this->currencyFormatInput($this->modal2_shipping_value),
+                'others_value' => $this->currencyFormatInput($this->modal2_others_value),
+                'note' => $this->modal2_note,
                 'updated_at' => date('Y-m-d H:i:s')
             ]);
 
@@ -486,7 +575,47 @@ class PurchaseorderlistView extends Component
         session()->flash('success', 'PO '.$po_show_id.' deleted');
     }
 
+    public function showPO($po_number){
+
+        $query = "
+        select tpd.id as 'po_number', tpd.item_sequence , tpd.item_id , tpd.qty , tpd.price_unit, tpd.final_delivery as 'dlv', tpd.discount, tpd.tax,
+        tph.po_show_id, tph.delivery_date, tph.vendor_id, tph.payment_terms, tph.grand_total, tph.print, date(tph.created_at) as 'created_at', tph.ship_to_address, tph.ship_to_city, tph.ship_to_country, tph.ship_to_postal_code, tph.ship_to_phone1, tph.ship_to_phone2, tph.shipping_value, tph.others_value, tph.note,
+        mi.name as 'item_name', mi.show_id as 'item_show_id', mi.unit as 'item_unit',
+        mv.show_id as 'vendor_show_id', mv.name as 'vendor_name',mv.address as 'vendor_address', mv.city as 'vendor_city', mv.country as 'vendor_country', mv.phone as 'vendor_phone1', mv.alt_phone1 as 'vendor_phone2'
+        from t_po_d tpd, t_po_h tph, m_items mi, m_vendors mv 
+        WHERE 
+        tpd.id = tph.id and
+        tpd.item_id = mi.id and
+        tph.vendor_id = mv.id and 
+        tph.id = '".$po_number."' and
+        tph.company_id = '".session()->get('company_id')."' and
+        tph.deleted = 0
+        for share
+        ";
+
+        $select = DB::select($query);
+
+        $modal3_datas=[];
+        $index=0;
+        foreach ($select as $data) {
+            $modal3_datas[$index] = (array) $data;
+            $modal3_datas[$index]['subtotal'] = ($data->qty*$data->price_unit)*((100-$data->discount)/100)*((100+$data->tax)/100);
+            $index++;
+        }
+
+        $companies = DB::table('companies')
+                        ->where('id', session()->get('company_id'));
+        $companies = (array) $companies->first();
+        
+        $this->modal3=true;
+        $this->modal3_title = 'PO '.$modal3_datas[0]['po_show_id'];
+        $this->modal3_datas = $modal3_datas;
+        $this->modal3_companies = $companies;
+        
+    }
+
     
+
     public function closeSuccessNotif(){
         session()->forget('success');    
     }

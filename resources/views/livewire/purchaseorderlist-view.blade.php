@@ -165,10 +165,10 @@
                                             {{ $result['item_name'] }}
                                         </td>
                                         <td class="px-1 py-2 text-right">
-                                            {{ number_format($result['qty'],0,',','.')}}
+                                            {{ number_format($result['qty'],session()->get('qty_decimal'),session()->get('decimal_separator'),session()->get('thousands_separator'))}}
                                         </td>
                                         <td class="px-1 py-2 text-center">
-                                            {{ $result['vendor_id'] }}
+                                            {{ $result['vendor_show_id'] }}
                                         </td>
                                         <td class="px-1 py-2 text-center">
                                             {{ $result['vendor_name'] }}
@@ -184,6 +184,13 @@
                                         <td class="text-center">
                                             @if ($result['dlv']==0)
                                                 <div class="flex item-center justify-center">
+                                                    <div class="w-4 transform hover:text-purple-500 hover:scale-110 cursor-pointer" wire:click="showPO({{ $result['po_number'] }})">
+                                                        <svg xmlns="http://www.w3.org/2000/svg"  fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div class="w-2"></div>
                                                     <div class="w-4 transform hover:text-purple-500 hover:scale-110 cursor-pointer" wire:click="editPO({{ $result['po_number'] }})">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -199,6 +206,13 @@
                                                 </div>
                                             @else
                                                 <div class="flex item-center justify-center">
+                                                    <div class="w-4 transform hover:text-purple-500 hover:scale-110 cursor-pointer" wire:click="showPO({{ $result['po_number'] }})">
+                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                                        </svg>
+                                                    </div>
+                                                    <div class="w-2"></div>
                                                     <div class="w-4 text-gray-300" wire:click="editPO(-1)">
                                                         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
@@ -326,8 +340,9 @@
     <x-jet-dialog-modal wire:model="modal2" maxWidth="5xl">
         <x-slot name="title">
             <div class="flex justify-between">
-                <div>
+                <div class="">
                     <span class="text-gray-700">Edit PO {{ $modal2_title }}</span>
+                    
                 </div>
                 
                 <div class="mt-1 flex">
@@ -355,15 +370,16 @@
                             Payment Terms
                         </x-input>
                     </div> 
+                    
                 </div>
                 
-                <div>
-                    <span class="ml-2 text-red-500 font-bold">{{ $modal2_message }}</span>    
+                <div class="ml-5">
+                    <span class="text-red-500 font-bold">{{ $modal2_message }}</span>    
                 </div>           
             </div>
             @php
                 $index = 0;
-                $grand_total = 0;
+                
             @endphp
             @foreach ($modal2_datas as $data)
                 @php
@@ -376,90 +392,111 @@
                     if($data['deleted']==1){
                         $disb = 'disabled';
                     }
+                    
                 @endphp
-                <div class="mt-2 w-full rounded-md border flex justify-between w-full ">
-                    <div class="bg-gray-200 grid justify-items-center w-12">
-                        <div class="justify-self-center place-self-center">
-                            <span class="text-gray-700 text-xs font-bold">{{ $data['item_sequence'] }}</span>
+                <div class="mt-2 w-full bg-gray-100 rounded-md border flex justify-between w-full ">
+                    <div class="flex">
+                        {{-- item sequence --}}
+                        <div class="bg-gray-200 grid justify-items-center w-12">
+                            <div class="justify-self-center place-self-center">
+                                <span class="text-gray-700 text-xs font-bold">{{ $data['item_sequence'] }}</span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="bg-gray-100 px-2 py-2 grid grid-cols-1 place-items-stretch w-full ">
-                        <div>
+                        {{-- name --}}
+                        <div class="bg-gray-100 px-2 py-2 grid grid-cols-1 place-items-stretch ">
                             <div>
-                                <span class="text-gray-700 text-xs font-bold">{{ $data['item_show_id'] }}</span>
-                                @if ($data['final_delivery']==1)
-                                    <span class="text-white bg-green-600 rounded-md text-xs px-2 py-1">Final Delivery</span>    
-                                @endif
-                                @if ($data['deleted']==1)
-                                    <span class="text-white bg-red-500 rounded-md text-xs px-2 py-1">Deleted</span>    
-                                @endif
+                                <div>
+                                    <span class="text-gray-700 text-xs font-bold">{{ $data['item_show_id'] }}</span>
+                                    @if ($data['final_delivery']==1)
+                                        <span class="text-white bg-green-600 rounded-md text-xs px-2 py-1">Final Delivery</span>    
+                                    @endif
+                                    @if ($data['deleted']==1)
+                                        <span class="text-white bg-red-500 rounded-md text-xs px-2 py-1">Deleted</span>    
+                                    @endif
+                                </div>
+                                <div class="flex items-center mt-1">
+                                    <span class="text-gray-700">{{ $data['item_name'] }}</span>
+                                </div>
                             </div>
-                            <div class="flex items-center mt-1">
-                                <span class="text-gray-700">{{ $data['item_name'] }}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex">
+                        {{-- qty --}}
+                        <div class="bg-gray-100 px-1 py-2 w-28">
+                            <div>
+                                <label class="text-gray-700 text-xs font-bold" for="qty">Qty</label>
+                            </div>
+                            <div class="mt-1 flex">
+                                <div>
+                                    <x-input-qty wireprop="wire:model.lazy=modal2_poitem_qty.{{ $data['item_sequence'] }}" disb="{{ $disb }}" unit="{{ $data['item_unit'] }}"></x-input-qty>                            
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="bg-gray-100 px-2 py-2 w-24">
-                        <div>
-                            <label class="text-gray-700 text-xs font-bold" for="qty">Qty</label>
+                        {{-- price --}}
+                        <div class="bg-gray-100 px-1 py-2 w-28">
+                            <div>
+                                <label class="text-gray-700 text-xs font-bold" for="price">Price/Unit</label>
+                            </div>
+                            <div class="mt-1">                            
+                                <x-input-currency wireprop="wire:model.lazy=modal2_poitem_price.{{ $data['item_sequence'] }}" disb="{{ $disb }}"></x-input-currency>
+                            </div>
                         </div>
-                        <div class="mt-1">
-                            <input wire:model.lazy="modal2_poitem_qty.{{ $data['item_sequence'] }}" class=" h-8 w-20 rounded-md text-xs focus:border-gray-100 focus:ring focus:ring-gray-500 " type="text" {{ $disb }}>
+                        {{-- discount --}}
+                        <div class="bg-gray-100 px-1 py-2 w-24">
+                            <div>
+                                <label class="text-gray-700 text-xs font-bold" for="discount">Discount (%)</label>
+                            </div>
+                            <div class="mt-1">
+                                <x-input-discount wireprop="wire:model.lazy=modal2_poitem_disc.{{ $data['item_sequence'] }}" disb="{{ $disb }}"></x-input-discount>
+                            </div>
                         </div>
-                    </div>
-                    <div class="bg-gray-100 px-2 py-2 w-24">
-                        <div>
-                            <label class="text-gray-700 text-xs font-bold" for="price">Price/Unit</label>
+                        {{-- tax --}}
+                        <div class="bg-gray-100 px-1 py-2 w-20">
+                            <div>
+                                <label class="text-gray-700 text-xs font-bold" for="tax">Tax (%)</label>
+                            </div>
+                            <div class="mt-1">
+                                <x-input-tax wireprop="wire:model.lazy=modal2_poitem_tax.{{ $data['item_sequence'] }}" disb="{{ $disb }}"></x-input-tax>
+                            </div>
                         </div>
-                        <div class="mt-1">
-                            <input wire:model.lazy="modal2_poitem_price.{{ $data['item_sequence'] }}" class=" h-8 w-20 rounded-md text-xs focus:border-gray-100 focus:ring focus:ring-gray-500 " type="text" {{ $disb }}>
-                        </div>
-                    </div>
-                    <div class="bg-gray-100 px-2 py-2 w-24">
-                        <div>
-                            <label class="text-gray-700 text-xs font-bold" for="discount">Discount (%)</label>
-                        </div>
-                        <div class="mt-1">
-                            <input wire:model.lazy="modal2_poitem_disc.{{ $data['item_sequence'] }}" class=" h-8 w-20 rounded-md text-xs focus:border-gray-100 focus:ring focus:ring-gray-500 " type="text" {{ $disb }}>
-                        </div>
-                    </div>
-                    <div class="bg-gray-100 px-2 py-2 w-24">
-                        <div>
-                            <label class="text-gray-700 text-xs font-bold" for="tax">Tax (%)</label>
-                        </div>
-                        <div class="mt-1">
-                            <input wire:model.lazy="modal2_poitem_tax.{{ $data['item_sequence'] }}" class=" h-8 w-20 rounded-md text-xs focus:border-gray-100 focus:ring focus:ring-gray-500 " type="text" {{ $disb }}>
-                        </div>
-                    </div>
-                    <div class="bg-gray-100 px-2 py-2 w-48">
-                        <div>
-                            <label class="text-gray-700 text-xs font-bold" for="tax">Total Price</label>
-                        </div>
-                        <div class="mt-1">
-                            @php
-                                $total = 
-                                ($modal2_poitem_qty[$data['item_sequence']]*$modal2_poitem_price[$data['item_sequence']])*
-                                ((100-$modal2_poitem_disc[$data['item_sequence']])/100)*
-                                ((100+$modal2_poitem_tax[$data['item_sequence']])/100);
-                                $grand_total += $total;
-                            @endphp
-                            <span class="text-gray-700">{{ number_format($total,0,',','.') }}</span>
-                        </div>
-                    </div>
-                    <div class="bg-gray-100 px-2 py-2 w-8 grid justify-items-center">
-                        <div class="justify-self-center place-self-center">
-                            @if ($data['final_delivery']==0 && $data['deleted']==0)
-                                <svg wire:click="deleteItemEditPO({{ $index }})" onclick="return confirm('Are you sure want to delete?') || event.stopImmediatePropagation()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current text-red-500 hover:text-red-600 cursor-pointer" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
-                                </svg>
-                            @else
-                                <svg wire:click="deleteItemEditPO({{ $index }})" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current text-gray-300" viewBox="0 0 20 20" fill="currentColor">
-                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
-                                </svg>
-                            @endif
+                        {{-- total --}}
+                        <div class="bg-gray-100 px-1 py-2 min-w-40 grid grid-cols-1">
+                            <div>
+                                <div class="">
+                                    <div class="flex justify-end">
+                                        <div class="self-center">
+                                            <label class="text-gray-700 text-xs font-bold" for="tax">Total Price</label>
+                                        </div>                                    
+                                    </div>
+                                </div>
+                                <div class="">
+                                    <div class="flex justify-end h-10">
+                                        <div class="self-center">
+                                            <span class="text-gray-700">{{ number_format($modal2_poitem_subtotal[$data['item_sequence']],session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator')) }}</span>
+                                        </div>                                        
+                                    </div>                                
+                                </div>
+                            </div>
                             
                         </div>
+                        {{-- button --}}
+                        <div class="bg-gray-100 px-1 py-2 w-9 grid justify-items-center">
+                            <div class="justify-self-center place-self-center">
+                                @if ($data['final_delivery']==0 && $data['deleted']==0)
+                                    <svg wire:click="deleteItemEditPO({{ $index }})" onclick="return confirm('Are you sure want to delete?') || event.stopImmediatePropagation()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current text-red-500 hover:text-red-600 cursor-pointer" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                    </svg>
+                                @else
+                                    <svg wire:click="deleteItemEditPO({{ $index }})" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+                                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                    </svg>
+                                @endif
+                                
+                            </div>
+                        </div>
                     </div>
+                   
                 </div>
                 @php
                     $index++;
@@ -486,8 +523,77 @@
                     </div>
                 </div>
                 <div>
-                    <span class="text-xl font-mono text-gray-700">Grand Total:</span>
-                    <p class="text-3xl font-bold text-gray-700">{{ number_format($grand_total,0,',','.') }}</p>
+                    <div>
+                        <div class="flex justify-between">
+                            <div class="flex place-items-center text-xs">
+                                Shipping
+                            </div>
+                            <div class="ml-2">
+                                
+                                <x-input-currency wireprop="wire:model.debounce500ms=modal2_shipping_value"></x-input-currency>
+                            </div>
+                            
+                        </div>
+                        <div class="mt-2 flex justify-between">
+                            <div class="flex place-items-center text-xs">
+                                Others
+                            </div>
+                            <div class="ml-2">
+                                
+                                <x-input-currency wireprop="wire:model.debounce500ms=modal2_others_value"></x-input-currency>
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="mt-2 flex justify-end">
+                        <div>
+                            <span class="text-xl font-mono text-gray-700">Grand Total:</span>
+                            <p class="text-3xl font-bold text-gray-700">{{ session()->get('currency_symbol').' '.number_format($modal2_grand_total,session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator')) }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-3">
+                <div>Note</div>
+                <div>
+                    <textarea wire:model.defer="modal2_note" class="text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" name="modal2_note" id="modal2_note" cols="30" rows="5"></textarea>
+                </div>
+            </div>
+            <div class="mt-3">
+                <div>Ship to</div>
+                <div>
+                    <div>
+                        <input wire:model.defer="modal2_shipto_address" type="text" name="modal2_shipto_address" class="h-9 block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" placeholder="Address">
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/4 mt-2">
+                        <div>
+                            <input wire:model.defer="modal2_shipto_city" type="text" name="modal2_shipto_city" class="h-9 block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" placeholder="City">
+                        </div>
+                    </div>
+                    <div class="w-1/4 mt-2 ml-2">
+                        <div>
+                            <input wire:model.defer="modal2_shipto_country" type="text" name="modal2_shipto_country" class="h-9 block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" placeholder="Country">
+                        </div>
+                    </div>
+                    <div class="w-1/4 mt-2 ml-2">
+                        <div>
+                            <input wire:model.defer="modal2_shipto_postalcode" type="text" name="modal2_shipto_postalcode" class="h-9 block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" placeholder="Postal Code">
+                        </div>
+                    </div>
+                </div>
+                <div class="flex">
+                    <div class="w-1/4 mt-2">
+                        <div>
+                            <input wire:model.debounce.500ms="modal2_shipto_phone1" type="text" name="modal2_shipto_phone1" class="h-9 block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" placeholder="Phone 1">
+                        </div>
+                    </div>
+                    <div class="w-1/4 mt-2 ml-2">
+                        <div>
+                            <input wire:model.debounce.500ms="modal2_shipto_phone2" type="text" name="modal2_shipto_phone2" class="h-9 block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" placeholder="Phone 2">
+                        </div>
+                    </div>
                 </div>
             </div>
         </x-slot>
@@ -504,6 +610,213 @@
         </x-slot>
     </x-jet-dialog-modal>
     {{-- END MODAL 2 --}}
+
+    {{-- MODAL 3 --}}
+    <x-jet-dialog-modal wire:model="modal3" maxWidth="5xl">
+        <x-slot name="title">
+        </x-slot>
+        
+        <x-slot name="content">
+            <div class="w-full text-gray-800">
+                @if ($modal3)
+                    {{-- PO HEADER --}}
+                    <div>
+                        <div class="flex justify-between">
+                            <div>
+                                <div class="font-bold text-xl">{{ $modal3_companies['company_desc'] }}</div>
+                                <div class="mt-1">{{ $modal3_companies['address'] }}</div>
+                                <div>{{ $modal3_companies['city'].', '.$modal3_companies['country'] }}</div>
+                                <div>{{ $modal3_companies['phone'].', '.$modal3_companies['altphone'] }}</div>
+                                
+                            </div>
+                            <div>
+                                <div class="font-bold text-4xl">PURCHASE ORDER</div>
+                                <div class="flex justify-end text-xl">PO# {{ $modal3_datas[0]['po_show_id'] }}</div>
+                            </div>
+                        </div>
+                        <div class="mt-4 ">
+                            <div>
+                                <div class="flex">
+                                    <div class="w-28">
+                                        Order Date
+                                    </div>
+                                    <div>
+                                        : {{ $modal3_datas[0]['created_at'] }}
+                                    </div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-28">
+                                        Delivery Date
+                                    </div>
+                                    <div>
+                                        : {{ $modal3_datas[0]['delivery_date'] }}
+                                    </div>
+                                </div>
+                            </div>                            
+                        </div>
+                        <div class="flex justify-between mt-5">
+                            <div class="w-60">
+                                <div class="bg-gray-200 flex justify-center font-bold">
+                                    Vendor
+                                </div>
+                                <div>
+                                    {{ $modal3_datas[0]['vendor_address'] }}
+                                </div>
+                                <div>
+                                    {{ $modal3_datas[0]['vendor_city'].', '.$modal3_datas[0]['vendor_country'] }}
+                                </div>
+                                <div>
+                                    {{ $modal3_datas[0]['vendor_phone1'].', '.$modal3_datas[0]['vendor_phone2'] }}
+                                </div>
+                            </div>
+                            <div class="w-60">
+                                <div class="bg-gray-200 flex justify-center font-bold">
+                                    Ship To
+                                </div>
+                                <div>
+                                    {{ $modal3_datas[0]['ship_to_address'].', '.$modal3_datas[0]['ship_to_postal_code'] }}
+                                </div>
+                                <div>
+                                    {{ $modal3_datas[0]['ship_to_city'].', '.$modal3_datas[0]['ship_to_country']  }}
+                                </div>
+                                <div>
+                                    {{ $modal3_datas[0]['ship_to_phone1'].', '.$modal3_datas[0]['ship_to_phone2']  }}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {{-- PO ITEM --}}
+                    <div class="mt-5">
+                        <table class="w-full">
+                            <thead>
+                                <tr>
+                                    <th class="bg-gray-200 w-12 text-left">No</th>
+                                    <th class="bg-gray-200 text-left">Item Name</th>
+                                    <th class="bg-gray-200 w-20 text-left">Qty</th>
+                                    <th class="bg-gray-200 w-20 text-left">Unit</th>
+                                    <th class="bg-gray-200 w-32 text-left">Price/Unit</th>
+                                    <th class="bg-gray-200 w-32 text-left">Discount</th>
+                                    <th class="bg-gray-200 w-20 text-left">Tax</th>
+                                    <th class="bg-gray-200 w-32 text-right">Subtotal<br><span class="text-xs">(Tax not included)</span></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php
+                                    $taxtotal=0;
+                                    $subtotal=0;
+                                    $grandtotal=0;
+                                @endphp
+                                @foreach ($modal3_datas as $data)
+                                    @php
+                                        $total = ($data['qty']*$data['price_unit'])*((100-$data['discount'])/100);
+                                        $subtotal += $total;
+                                        $taxtotal += ($data['qty']*$data['price_unit'])*((100-$data['discount'])/100)*($data['tax']/100);
+                                    @endphp
+                                    <tr class="border-t">
+                                        <td>{{ $data['item_sequence'] }}</td>
+                                        <td class="pr-3">{{ $data['item_name'] }}</td>
+                                        <td>{{ number_format($data['qty'] ,session()->get('qty_decimal'),session()->get('decimal_separator'),session()->get('thousands_separator'))}}</td>
+                                        <td>{{ $data['item_unit'] }}</td>
+                                        <td>{{ session()->get('currency_symbol').' '.number_format($data['price_unit'] ,session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator')) }}</td>
+                                        <td>{{ $data['discount'] }} %</td>
+                                        <td>{{ $data['tax'] }} %</td>
+                                        <td class="text-right">
+                                            <div class="flex justify-between">
+                                                <div>
+                                                    {{ session()->get('currency_symbol') }}
+                                                </div>
+                                                <div>
+                                                    {{ number_format($total ,session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator'))}}
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endforeach
+                                
+                                
+                            </tbody>
+                        </table>
+                    </div>
+                    {{-- PO FOOTER --}}
+                    <div>
+                        <div class="flex justify-between mt-5">
+                            <div>
+                                <div class="font-bold">Note :</div>
+                                <div class="mr-20">{{ $modal3_datas[0]['note'] }}</div>
+                            </div>
+                            <div>
+                                <div class="flex">
+                                    <div class="w-32">SUBTOTAL</div>
+                                    <div>: {{ session()->get('currency_symbol') }}</div>
+                                    <div class="text-right w-40">{{ number_format($subtotal ,session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator'))}}</div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-32">TAX</div>
+                                    <div>: {{ session()->get('currency_symbol') }}</div>
+                                    <div class="text-right w-40">{{number_format($taxtotal ,session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator'))}}</div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-32">SHIPPING</div>
+                                    <div>: {{ session()->get('currency_symbol') }}</div>
+                                    <div class="text-right w-40">{{ number_format($modal3_datas[0]['shipping_value'] ,session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator'))}}</div>
+                                </div>
+                                <div class="flex">
+                                    <div class="w-32">OTHERS</div>
+                                    <div>: {{ session()->get('currency_symbol') }}</div>
+                                    <div class="text-right w-40">{{ number_format($modal3_datas[0]['others_value'] ,session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator'))}}</div>
+                                </div>
+                                <hr>
+                                <hr>
+                                <hr>
+                                <div class="flex">
+                                    <div class="w-32 font-bold">GRAND TOTAL</div>
+                                    <div class="font-bold">: {{ session()->get('currency_symbol') }}</div>
+                                    @php
+                                        $grandtotal = $subtotal + $taxtotal + $modal3_datas[0]['shipping_value'] + $modal3_datas[0]['others_value'];
+                                    @endphp
+                                    <div class="text-right font-bold w-40">{{number_format($grandtotal ,session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator'))}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                @endif                  
+            </div>
+            
+            
+        </x-slot>
+    
+        <x-slot name="footer">
+            <div class="flex justify-between">
+                
+                <x-jet-secondary-button wire:click="$toggle('modal3')" wire:loading.attr="disabled">
+                    Close
+                </x-jet-secondary-button>
+
+                @if ($modal3)
+                    <a class="px-2 py-2 rounded-md bg-green-600 text-gray-200" href="/purchaseorder/print/{{ $modal3_datas[0]['po_show_id'] }}" target="_blank">
+                        <div class="flex place-items-center">
+                            <div>
+                                <span>Print</span>
+                            </div>
+                            <div class="mx-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                                </svg>
+                            </div>
+                            <div class="text-xs">
+                                ({{ $modal3_datas[0]['print'] }})
+                            </div>           
+                        </div>
+                    </a>
+                @endif
+                
+            </div>
+            
+    
+        </x-slot>
+    </x-jet-dialog-modal>
+    {{-- END MODAL 3 --}}
 </div>
 
 {{-- END PAGES --}}

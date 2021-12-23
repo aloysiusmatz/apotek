@@ -1,6 +1,6 @@
 {{-- PAGES --}}
             
-<div class="bg-gray-100 w-screen">
+<div class="bg-gray-100 pb-2 overflow-auto h-screen w-full">
                 
     {{-- NAVIGATION BAR --}}
     <div class="bg-white p-3 flex justify-between dark:border-gray-600">

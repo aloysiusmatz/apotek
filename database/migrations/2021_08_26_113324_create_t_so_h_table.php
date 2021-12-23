@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateTPoHTable extends Migration
+class CreateTSoHTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateTPoHTable extends Migration
      */
     public function up()
     {
-        Schema::create('t_po_h', function (Blueprint $table) {
+        Schema::create('t_so_h', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id');
-            $table->unsignedBigInteger('po_show_id');
+            $table->unsignedBigInteger('so_show_id');
             $table->date('delivery_date');
-            $table->unsignedBigInteger('vendor_id');
+            $table->unsignedBigInteger('customer_id')->nullable();
+            $table->string('customer_desc');
             $table->string('payment_terms');
             $table->double('grand_total',15,2);
             $table->boolean('deleted');
@@ -31,18 +32,19 @@ class CreateTPoHTable extends Migration
             $table->string('ship_to_phone2', 25)->nullable();
             $table->double('shipping_value',15,2)->nullable();
             $table->double('others_value',15,2)->nullable();
-            $table->text('note');
+            $table->text('note')->nullable();
             $table->timestamps();
 
             $table->foreign('company_id')
                 ->references('id')
                 ->on('companies')
                 ->onDelete('no action');
-            
-            $table->foreign('vendor_id')
+
+            $table->foreign('customer_id')
                 ->references('id')
-                ->on('m_vendors')
+                ->on('m_customers')
                 ->onDelete('no action');
+
         });
     }
 
@@ -53,6 +55,6 @@ class CreateTPoHTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('t_po_h');
+        Schema::dropIfExists('t_so_h');
     }
 }

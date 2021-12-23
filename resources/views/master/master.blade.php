@@ -1,14 +1,17 @@
 @extends('layouts.app')
 
 @section('body')
-    <div class="flex">
-        {{-- SIDEBAR --}}
-        @include("master.sidebar")
-        {{-- END SIDEBAR --}}
+    
+    {{-- SIDEBAR --}}
+    @include("master.sidebar")
+    {{-- END SIDEBAR --}}
 
-        {{-- PAGES --}}
+    {{-- SIDEBAR --}}
+    @include("master.mobile-sidebar")
+    {{-- END SIDEBAR --}}
+
+    <div class="page-content h-screen overflow-auto bg-yellow-500 z-0">
+        
         @yield('content')
-        {{-- @livewire('companies-view') --}}
-        {{-- END PAGES --}}
     </div>
 @endsection

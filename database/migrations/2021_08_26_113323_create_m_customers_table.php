@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateMVendorsTable extends Migration
+class CreateMCustomersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,11 @@ class CreateMVendorsTable extends Migration
      */
     public function up()
     {
-        Schema::create('m_vendors', function (Blueprint $table) {
+        Schema::create('m_customers', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('company_id');
             $table->unsignedBigInteger('show_id');
+            $table->string('tax_id',25);
             $table->string('name',35);
             $table->string('address')->nullable();
             $table->text('city')->nullable();
@@ -29,7 +30,8 @@ class CreateMVendorsTable extends Migration
             $table->foreign('company_id')
                 ->references('id')
                 ->on('companies')
-                ->onDelete('cascade');
+                ->onDelete('no action');
+
         });
     }
 
@@ -40,6 +42,6 @@ class CreateMVendorsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('m_vendors');
+        Schema::dropIfExists('m_customers');
     }
 }

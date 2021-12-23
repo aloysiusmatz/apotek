@@ -1,6 +1,6 @@
 {{-- PAGES --}}
             
-<div class="bg-gray-100 w-screen">
+<div class="bg-gray-100 pb-2 overflow-auto h-screen w-full">
                 
     {{-- NAVIGATION BAR --}}
     <div class="bg-white p-3 flex justify-between dark:border-gray-600">
@@ -223,7 +223,7 @@
 
     {{-- SEARCH MODAL --}}
     @if ($show_item_search)
-        <div class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="fixed z-30 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
             <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
                 <!--
                 Background overlay, show/hide based on modal state.

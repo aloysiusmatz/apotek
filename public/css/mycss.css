@@ -9,3 +9,47 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+.sidebar-normal{
+  width: 200px;
+  height: 100vh;
+  min-height: calc(100vh - 1px);
+  /* min-height: 100vh; */
+  overflow: auto;
+}
+
+.sidebar-menu-header{
+  height: 80px;
+}
+
+.sidebar-menu-content{
+  height: 70vh;
+  min-height: 450px;
+  padding-bottom: 145px;
+  /* height: calc(100% - 350px); */
+  /* max-height: 450px;
+  min-height: 450px; */
+  overflow: auto;
+}
+
+.sidebar-menu-profile{
+  width: 200px;
+  height: 145px;
+  /* display: none; */
+}
+
+.sidebar-mobile{
+  width: 55px;
+}
+
+.page-content{
+  margin-left: 200px;
+  width: calc(100% - 200px);
+  min-width: 1000px;  
+}
+
+.page-content-mobile{
+  margin-left: 55px;
+  width: calc(100% - 55px);
+  /* min-width: calc(100% - 250px); */
+}

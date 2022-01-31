@@ -92,7 +92,7 @@
         
         <div class="flex grid grid-cols-12">
             <div class="col-span-12">
-                {{-- PO HEADER --}}
+                {{-- SO HEADER --}}
                 <div class="bg-white rounded-md p-2 shadow-md">
                     <div class="flex">
                         <x-input myclass="w-40 ml-1" type="date" name="modal2_delivery_date" wireprop="wire:model=modal2_delivery_date" disb="">
@@ -101,128 +101,146 @@
                         <x-input myclass="w-40 ml-1" type="text" name="modal2_delivery_date" wireprop="wire:model=modal2_delivery_date" disb="">
                             Customer
                         </x-input>
-                        <div class="ml-2 w-3/6">
-                            <x-input myclass="" type="text" name="desc" wireprop="wire:model.lazy=payment_terms" disb="">
-                                Payment Terms
-                            </x-input>
-                        </div>
+                        <x-input myclass="w-56 ml-1" type="text" name="desc" wireprop="wire:model.lazy=payment_terms" disb="">
+                            Payment Terms
+                        </x-input>
+                        
                     </div>                    
                 </div>
-                {{-- END PO HEADER --}}
+                {{-- END SO HEADER --}}
 
-                {{-- PO ITEM --}}
-                <div class="bg-white rounded-md mt-2 shadow-md max-h-96 overflow-y-auto">
-                    {{-- <table class="w-full table-auto">
-                        <thead>
-                            <tr class="text-gray-600 uppercase text-xs leading-normal">
-                                <th class="sticky top-0 bg-gray-200 py-2 px-2 text-left cursor-pointer w-10" >No</th>
-                                <th class="sticky top-0 bg-gray-200 py-2 px-2 text-left cursor-pointer w-28" >Item Number</th>
-                                <th class="sticky top-0 bg-gray-200 py-2 px-2 text-left cursor-pointer " >Name</th>
-                                <th class="sticky top-0 bg-gray-200 py-2 px-2 text-left cursor-pointer w-28" >Qty</th>
-                                <th class="sticky top-0 bg-gray-200 py-2 px-2 text-left cursor-pointer w-36" >Price/Unit</th>
-                                <th class="sticky top-0 bg-gray-200 py-2 px-2 text-left cursor-pointer w-14" >Unit</th>
-                                <th class="sticky top-0 bg-gray-200 py-2 px-2 text-left cursor-pointer w-20" >Disc (%)</th>
-                                <th class="sticky top-0 bg-gray-200 py-2 px-2 text-left cursor-pointer w-20" >Tax (%)</th>
-                                <th class="sticky top-0 bg-gray-200 py-2 px-2 text-left cursor-pointer w-36" >Total Price</th>
-                                <th class="sticky top-0 bg-gray-200 py-2 px-2 text-left cursor-pointer w-20" >
-                                    <div class="w-full flex justify-end">
-                                        <x-button-additem wireprop="wire:click=toogleSearchModal">Add</x-button-additem>
-                                    </div>
-                                    
-                                </th>
-                            </tr>
-                        </thead>
-                        <tbody class="text-gray-600 text-sm font-light">
-                            @php
-                                $index = -1;    
-                            @endphp
-                            @if (count($items_cart)==0)
-                            <tr class="border-b border-gray-200">
-                                <td colspan="9" class="text-center">no item selected</td>
-                            </tr>
+                {{-- SO ITEM --}}
+                <div>
+
+                    {{-- SEARCH ITEM --}}
+                    <div class="mt-2 w-48">
+                        <input wire:model.debounce.500ms="additem_query" type="text" name="additem_query" class="h-9 block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" placeholder="Search item to add" autocomplete="off">
+
+                        @if (count($search_item_result)>0)
+                        <div class="absolute z-10 w-96 p-2 bg-white rounded-md border">
+                            @foreach ($search_item_result as $data)
+                                <div wire:click="addItemSO({{ $data['id'] }})" class="px-2 py-2 rounded-md hover:bg-gray-200 text-gray-700 text-xs cursor-pointer">{{ $data['show_id'].'-'.$data['name'] }}</div>
+                            @endforeach
+                        </div>
+                        @else
+                        
+                            @if ($additem_query!='')
+                            <div class="absolute z-10 w-96 p-2 bg-white rounded-md border">
+                                <div class="px-2 py-2 text-gray-700 text-xs">No Result</div>
+                            </div>
                             @endif
-                            @foreach ($items_cart as $item_cart)
-                            @php
-                                $index++;    
-                            @endphp
-                            @if ($selected_cart==$index)
-                                <tr class="border-b border-gray-200 bg-blue-200">
-                            @else
-                                <tr class="border-b border-gray-200 hover:bg-gray-100">
-                            @endif
-                                <td class=" py-2 px-2 text-left cursor-pointer">
-                                    {{ $index+1 }}
-                                </td>
-                                <td class=" py-2 px-2 text-left cursor-pointer">
-                                    {{ $item_cart['show_id'] }}
-                                </td>
-                                <td class="py-2 px-2 text-left cursor-pointer">
-                                    {{ $item_cart['name'] }}
-                                </td>
-                                <td class="py-2 px-2 text-left cursor-pointer">
-                                    @if ($selected_cart==$index)
-                                    <input type="number" class="block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50" wire:model.lazy="item_qty">
-                                    @else
-                                        {{ $item_cart['qty'] }}
-                                    @endif
-                                </td>
-                                <td class="py-2 px-2 text-left cursor-pointer">
-                                    @if ($selected_cart==$index)
-                                        
-                                        <x-input-currency wireprop="wire:model.lazy=item_priceunit"></x-input-currency>
-                                    @else
-                                        {{ session()->get('currency_symbol').' '.number_format($item_cart['priceunit'],session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator')) }}
-                                    @endif
-                                </td>                                
-                                <td class="py-2 px-2 text-left cursor-pointer">
-                                    {{ $item_cart['unit'] }}
-                                </td>
-                                <td class="py-2 px-2 text-left cursor-pointer">
-                                    @if ($selected_cart==$index)
-                                    <input type="number" class="block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50" wire:model.lazy="item_discount">
-                                    @else
-                                        {{ $item_cart['discount'] }}
-                                    @endif
-                                </td>
-                                <td class="py-2 px-2 text-left cursor-pointer">
-                                    @if ($selected_cart==$index)
-                                        <input type="number" class="block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" wire:model.lazy="item_tax">
-                                    @else
-                                        {{ $item_cart['tax'] }}&nbsp%
-                                    @endif
-                                </td>
-                                <td class="py-2 px-2 text-left cursor-pointer">
-                                    @if ($selected_cart==$index)
-                                    {{ session()->get('currency_symbol').' '.number_format($item_qty*$item_priceunit*((100-$item_discount)/100)*(($item_tax+100)/100),session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator')) }}
-                                    @else
-                                    {{ session()->get('currency_symbol').' '.number_format($item_cart['totalprice'],session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator')) }}
-                                    @endif
-                                    
-                                </td>
-                                <td class="py-2 px-2 text-left">
-                                    <div class="flex justify-end">
-                                        @if ($selected_cart!=$index)
-                                            <svg wire:click="editItem({{ $index }})" xmlns="http://www.w3.org/2000/svg" class=" h-5 w-5 fill-current text-gray-600 cursor-pointer" viewBox="0 0 20 20" fill="currentColor">
-                                                <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-                                            </svg>
-                                        @else
-                                            <svg wire:click="loseSelected" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 cursor-pointer text-gray-600" viewBox="0 0 20 20" fill="currentColor">
-                                                <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                <path fill-rule="evenodd" d="M.458 10C1.732 5.943 5.522 3 10 3s8.268 2.943 9.542 7c-1.274 4.057-5.064 7-9.542 7S1.732 14.057.458 10zM14 10a4 4 0 11-8 0 4 4 0 018 0z" clip-rule="evenodd" />
-                                              </svg>
+                        
+                        @endif
+                    </div>
+                    
+
+                    {{-- ITEMS --}}
+                    <div class="mt-2 w-full bg-gray-100 rounded-md border flex justify-between w-full ">
+                        <div class="flex">
+                            {{-- item sequence --}}
+                            <div class="bg-gray-200 grid justify-items-center w-12">
+                                <div class="justify-self-center place-self-center">
+                                    <span class="text-gray-700 text-xs font-bold">{{ $data['item_sequence'] }}</span>
+                                </div>
+                            </div>
+                            {{-- name --}}
+                            <div class="bg-gray-100 px-2 py-2 grid grid-cols-1 place-items-stretch ">
+                                <div>
+                                    <div>
+                                        <span class="text-gray-700 text-xs font-bold">{{ $data['item_show_id'] }}</span>
+                                        @if ($data['final_delivery']==1)
+                                            <span class="text-white bg-green-600 rounded-md text-xs px-2 py-1">Final Delivery</span>    
                                         @endif
-                                        
-                                        <svg wire:click="deleteItem({{ $index }})" xmlns="http://www.w3.org/2000/svg" class="ml-3 h-5 w-5 fill-current text-red-500 cursor-pointer" viewBox="0 0 20 20" fill="currentColor">
+                                        @if ($data['deleted']==1)
+                                            <span class="text-white bg-red-500 rounded-md text-xs px-2 py-1">Deleted</span>    
+                                        @endif
+                                    </div>
+                                    <div class="flex items-center mt-1">
+                                        <span class="text-gray-700">{{ $data['item_name'] }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="flex">
+                            {{-- qty --}}
+                            <div class="bg-gray-100 px-1 py-2 w-28">
+                                <div>
+                                    <label class="text-gray-700 text-xs font-bold" for="qty">Qty</label>
+                                </div>
+                                <div class="mt-1 flex">
+                                    <div>
+                                        <x-input-qty wireprop="wire:model.lazy=modal2_poitem_qty.{{ $data['item_sequence'] }}" disb="{{ $disb }}" unit="{{ $data['item_unit'] }}"></x-input-qty>                            
+                                    </div>
+                                </div>
+                            </div>
+                            {{-- price --}}
+                            <div class="bg-gray-100 px-1 py-2 w-28">
+                                <div>
+                                    <label class="text-gray-700 text-xs font-bold" for="price">Price/Unit</label>
+                                </div>
+                                <div class="mt-1">                            
+                                    <x-input-currency wireprop="wire:model.lazy=modal2_poitem_price.{{ $data['item_sequence'] }}" disb="{{ $disb }}"></x-input-currency>
+                                </div>
+                            </div>
+                            {{-- discount --}}
+                            <div class="bg-gray-100 px-1 py-2 w-24">
+                                <div>
+                                    <label class="text-gray-700 text-xs font-bold" for="discount">Discount (%)</label>
+                                </div>
+                                <div class="mt-1">
+                                    <x-input-discount wireprop="wire:model.lazy=modal2_poitem_disc.{{ $data['item_sequence'] }}" disb="{{ $disb }}"></x-input-discount>
+                                </div>
+                            </div>
+                            {{-- tax --}}
+                            <div class="bg-gray-100 px-1 py-2 w-20">
+                                <div>
+                                    <label class="text-gray-700 text-xs font-bold" for="tax">Tax (%)</label>
+                                </div>
+                                <div class="mt-1">
+                                    <x-input-tax wireprop="wire:model.lazy=modal2_poitem_tax.{{ $data['item_sequence'] }}" disb="{{ $disb }}"></x-input-tax>
+                                </div>
+                            </div>
+                            {{-- total --}}
+                            <div class="bg-gray-100 px-1 py-2 min-w-40 grid grid-cols-1">
+                                <div>
+                                    <div class="">
+                                        <div class="flex justify-end">
+                                            <div class="self-center">
+                                                <label class="text-gray-700 text-xs font-bold" for="tax">Total Price</label>
+                                            </div>                                    
+                                        </div>
+                                    </div>
+                                    <div class="">
+                                        <div class="flex justify-end h-10">
+                                            <div class="self-center">
+                                                <span class="text-gray-700">{{ number_format($modal2_poitem_subtotal[$data['item_sequence']],session()->get('decimal_display'),session()->get('decimal_separator'),session()->get('thousands_separator')) }}</span>
+                                            </div>                                        
+                                        </div>                                
+                                    </div>
+                                </div>
+                                
+                            </div>
+                            {{-- button --}}
+                            <div class="bg-gray-100 px-1 py-2 w-9 grid justify-items-center">
+                                <div class="justify-self-center place-self-center">
+                                    @if ($data['final_delivery']==0 && $data['deleted']==0)
+                                        <svg wire:click="deleteItemEditPO({{ $index }})" onclick="return confirm('Are you sure want to delete?') || event.stopImmediatePropagation()" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current text-red-500 hover:text-red-600 cursor-pointer" viewBox="0 0 20 20" fill="currentColor">
                                             <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
                                         </svg>
-                    
-                                    </div>
-                                </td>
-                            </tr>
-                            @endforeach
-                        </tbody>
-                    </table> --}}
+                                    @else
+                                        <svg wire:click="deleteItemEditPO({{ $index }})" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 fill-current text-gray-300" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM7 9a1 1 0 000 2h6a1 1 0 100-2H7z" clip-rule="evenodd" />
+                                        </svg>
+                                    @endif
+                                    
+                                </div>
+                            </div>
+                        </div>
+                       
+                    </div>
                 </div>
+                
                 {{-- END PO ITEM --}}
                 
             </div>

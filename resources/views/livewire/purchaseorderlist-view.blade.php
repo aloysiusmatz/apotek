@@ -506,7 +506,7 @@
             <div class="w-full flex justify-between mt-2">
                 <div>
                     <div class="flex">
-                        <input wire:model.debounce.500ms="modal2_additem_query" type="text" name="modal2_additem_query" class="h-9 block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" placeholder="Search item to add">
+                        <input wire:model.debounce.500ms="modal2_additem_query" type="text" name="modal2_additem_query" class="h-9 block text-xs w-full rounded-md border-gray-300 shadow-sm focus:border-gray-300 focus:ring focus:ring-gray-200 focus:ring-opacity-50 appearance-none" placeholder="Search item to add" autocomplete="off">
                     </div>
                     <div class="absolute z-10 w-96">
                         @if (count($modal2_search_item_result)>0)

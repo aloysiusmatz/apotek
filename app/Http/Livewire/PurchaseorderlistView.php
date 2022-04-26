@@ -257,7 +257,7 @@ class PurchaseorderlistView extends Component
         $this->modal1_po = $po_number;
 
         $query = "
-        select a.*, c.show_id as 'item_show_id' , c.name as 'item_name', IFNULL(sum(d.qty),0) as 'receipt_qty'
+        select a.*, c.show_id as 'item_show_id' , c.name as 'item_name', c.unit as 'item_unit', IFNULL(sum(d.qty),0) as 'receipt_qty'
         from t_po_d a
         LEFT JOIN t_itmove_d d on a.id = d.po_id and a.item_sequence = d.po_item_sequence 
         LEFT JOIN t_po_h b on a.id = b.id

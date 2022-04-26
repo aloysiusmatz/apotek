@@ -10,7 +10,7 @@
     @include("master.mobile-sidebar")
     {{-- END SIDEBAR --}}
 
-    <div class="page-content h-screen overflow-auto bg-yellow-500 z-0">
+    <div class="page-content h-screen overflow-auto  z-0">
         
         @yield('content')
     </div>

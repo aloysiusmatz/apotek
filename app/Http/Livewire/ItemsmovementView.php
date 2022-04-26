@@ -790,7 +790,12 @@ class ItemsmovementView extends Component
                         $total_amount = $amount;
                     }
                     
-                    $cogs = $total_amount / $total_qty;
+                    if($total_qty == 0){
+                        $cogs = 0;
+                    }else{
+                        $cogs = $total_amount / $total_qty;
+                    }
+                    
                     // dd($qty.','.$amount.','.$total_qty.','.$total_amount.','.$cogs);
                     $t_pricehist = t_pricehist::create([
                         'posting_date' => $this->posting_date,

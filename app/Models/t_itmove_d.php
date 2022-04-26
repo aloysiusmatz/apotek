@@ -21,6 +21,8 @@ class t_itmove_d extends Model
         'qty',
         'amount',
         'po_id',
-        'po_item_sequence'
+        'po_item_sequence',
+        'so_id',
+        'so_item_sequence'
     ];
 }

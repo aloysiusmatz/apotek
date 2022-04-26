@@ -111,7 +111,7 @@
                         </div>
                         
 
-                        <button wire:click="savePO" class="px-3 py-1 h-8 bg-green-600 hover:bg-green-500 shadow-md rounded-md text-white font-semibold text-sm" wire:click="savePO">
+                        <button wire:click="savePO" class="px-3 py-1 h-8 bg-green-600 hover:bg-green-500 shadow-md rounded-md text-white font-semibold text-sm">
                             Save PO
                         </button>
                     </div>

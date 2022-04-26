@@ -9,6 +9,8 @@ class PrintPurchaseOrderController extends Controller
 {
     public function POPrint($po_show_id){
 
+        DB::beginTransaction();
+        
         $query = "
         select tpd.id as 'po_number', tpd.item_sequence , tpd.item_id , tpd.qty , tpd.price_unit, tpd.final_delivery as 'dlv', tpd.discount, tpd.tax,
         tph.po_show_id, tph.delivery_date, tph.vendor_id, tph.payment_terms, tph.grand_total, date(tph.created_at) as 'created_at', tph.ship_to_address, tph.ship_to_city, tph.ship_to_country, tph.ship_to_postal_code, tph.ship_to_phone1, tph.ship_to_phone2, tph.shipping_value, tph.others_value, tph.note,
@@ -40,7 +42,7 @@ class PrintPurchaseOrderController extends Controller
         $companies = (array) $companies->first();
         
         //add print counter
-        DB::beginTransaction();
+        
         $update = "update t_po_h
         set print = print+1
         where po_show_id='".$po_show_id."' and company_id='".session()->get('company_id')."'";

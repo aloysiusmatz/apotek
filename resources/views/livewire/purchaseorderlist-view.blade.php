@@ -107,7 +107,7 @@
                                 To Delivery Date
                             </x-input>
                             <div class="mt-1 ml-2 w-36">
-                                <label for="selection_dlv" class="block text-sm font-medium text-gray-700">Delivery</label>
+                                <label for="selection_dlv" class="block text-sm font-medium text-gray-700">Status</label>
                                 <x-select wireprop="wire:model.defer=selection_dlv">
                                     <option value="0">Open</option>
                                     <option value="1">Closed</option>
@@ -295,7 +295,7 @@
                             <label class="text-gray-700 text-xs font-bold" for="qty">Qty</label>
                         </div>
                         <div class="mt-1">
-                            <input wire:model.defer="poitem_qty.{{ $data['item_sequence'] }}" class=" h-8 w-20 rounded-md text-xs focus:border-gray-100 focus:ring focus:ring-gray-500 " type="text">
+                            <x-input-qty wireprop="wire:model.defer=poitem_qty.{{ $data['item_sequence'] }}" disb="" unit="{{ $data['item_unit'] }}"></x-input-qty> 
                         </div>
                     </div>
                     <div class="bg-gray-100 px-2 grid grid-cols-1 place-items-stretch col-span-3">

@@ -5,20 +5,19 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class t_so_d extends Model
+class t_do_d extends Model
 {
     use HasFactory;
 
-    protected $table = 't_so_d';
+    protected $table = 't_do_d';
 
     protected $fillable = [
         'id',
         'item_sequence',
+        'locbatch_split',
         'item_id',
-        'qty',
-        'price_unit',
-        'discount',
-        'tax',
-        'final_delivery'
+        'location_id',
+        'batch',
+        'qty'
     ];
 }

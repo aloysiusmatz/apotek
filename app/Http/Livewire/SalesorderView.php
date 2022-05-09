@@ -214,6 +214,7 @@ class SalesorderView extends Component
         $select_customer = "select * from m_customers where company_id='".session()->get('company_id')."' and show_id='".$this->customer_id."' ";
         $customer = DB::select($select_customer);
         
+        $customer_id='';
         if (count($customer) == 0) {
             
             $m_customers = m_customers::create([
@@ -228,13 +229,18 @@ class SalesorderView extends Component
                 'alt_phone1' => '',
                 'alt_phone2' => ''
             ]);
+            $customer_id = $m_customer->id;
+        }else{
+            // dd($customer);
+            $customer_id = $customer[0]->id;
         }
-
+            
+        
         $t_so_h = t_so_h::create([
             'company_id' => session()->get('company_id'),
             'so_show_id' => $show_id,
             'delivery_date' => $this->delivery_date,
-            'customer_id' => $m_customers->id,
+            'customer_id' => $customer_id,
             'customer_desc' => $this->customer_desc,
             'payment_terms' => $this->payment_terms,
             'grand_total' => $this->grandtotal,

@@ -120,36 +120,39 @@ class PurchaseorderView extends Component
     }
 
     public function createVendor(){
-        // $m_vendors = new m_vendors;
+        
 
-        DB::transaction(function () {
-            
-            $select_show_id = "select IFNULL(max(show_id), 2000000)+1 as id from m_vendors b WHERE b.company_id='".session()->get('company_id')."' for share";
+            // $select_show_id = "select IFNULL(max(show_id), 2000000)+1 as id from m_vendors b WHERE b.company_id='".session()->get('company_id')."' for share";
 
-            $show_id = DB::select($select_show_id)[0]->id;
+            // $show_id = DB::select($select_show_id)[0]->id;
 
-            $m_vendors = m_vendors::create([
-                'company_id' => session()->get('company_id'),
-                'show_id' => $show_id,
-                'name' => $this->search_vendor
+            // $m_vendors = m_vendors::create([
+            //     'company_id' => session()->get('company_id'),
+            //     'show_id' => $show_id,
+            //     'name' => $this->search_vendor
+            // ]);
+        
+        DB::beginTransaction();
+
+        $insert = DB::insert('insert into m_vendors(company_id, show_id, name) values (?, (select IFNULL(max(show_id), 2000000)+1 as id from m_vendors b WHERE b.company_id="'.session()->get('company_id').'"), ?)', [
+            session()->get('company_id'), 
+            $this->search_vendor
             ]);
-
-            $this->toogleVendorModal();
-            $this->selected_vendor['id'] = $m_vendors->id;
-            $this->selected_vendor['show_id'] = $show_id;
-            $this->selected_vendor['name'] = $m_vendors->name;
-            $this->search_vendor = '';
-        });
         
-        // $m_vendors = DB::insert('insert into m_vendors(company_id,show_id,name,created_at) values(?,(select IFNULL(max(show_id), 2000000)+1 from m_vendors b WHERE b.company_id='.session()->get('company_id').'),?,now())',[
-        //     session()->get('company_id'),
-        //     $this->search_vendor
-        // ]);
+        $m_vendors = DB::table('m_vendors')
+                        ->where('company_id', session()->get('company_id'))
+                        ->where('name', $this->search_vendor)
+                        ->get();
         
-        // $m_vendors->company_id = session()->get('company_id');
-        // $m_vendors->name = $this->search_vendor;
-        // $m_vendors->save();
+        // dd($m_vendors);
 
+        $this->toogleVendorModal();
+        $this->selected_vendor['id'] = $m_vendors[0]->id;
+        $this->selected_vendor['show_id'] = $m_vendors[0]->show_id;
+        $this->selected_vendor['name'] = $m_vendors[0]->name;
+        $this->search_vendor = '';
+        
+        DB::commit();
 
     }
 

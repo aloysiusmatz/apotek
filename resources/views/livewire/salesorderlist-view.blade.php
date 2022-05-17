@@ -132,15 +132,15 @@
                         <table class="w-full table-auto mt-1">
                             <thead>
                                 <tr class="text-gray-600 uppercase text-xs leading-normal">
-                                    <th wire:click="sortBy(0)" class="sticky top-0 bg-gray-200 px-1 py-2 text-center cursor-pointer w-20" >SO No.</th>
-                                    <th wire:click="sortBy(1)" class="sticky top-0 bg-gray-200 px-1 py-2 text-left cursor-pointer w-14" >SO Seq.</th>
-                                    <th wire:click="sortBy(2)" class="sticky top-0 bg-gray-200 px-1 py-2 text-center cursor-pointer w-24">Dlv. Date</th>
-                                    <th wire:click="sortBy(3)" class="sticky top-0 bg-gray-200 px-1 py-2 text-center cursor-pointer w-20" >Item No.</th>
-                                    <th wire:click="sortBy(4)" class="sticky top-0 bg-gray-200 px-1 py-2 text-center cursor-pointer" >Item Name</th>
-                                    <th wire:click="sortBy(5)" class="sticky top-0 bg-gray-200 px-1 py-2 text-right cursor-pointer w-24" >Qty</th>
-                                    <th wire:click="sortBy(6)" class="sticky top-0 bg-gray-200 px-1 py-2 text-center cursor-pointer w-28" >Customer No.</th>
-                                    <th wire:click="sortBy(7)" class="sticky top-0 bg-gray-200 px-1 py-2 text-center cursor-pointer" >Customer Name</th>
-                                    <th wire:click="sortBy(8)" class="sticky top-0 bg-gray-200 px-1 py-2 text-center cursor-pointer w-28" >Status</th>
+                                    <th class="sticky top-0 bg-gray-200 px-1 py-2 text-center w-20" >SO No.</th>
+                                    <th class="sticky top-0 bg-gray-200 px-1 py-2 text-left w-14" >SO Seq.</th>
+                                    <th class="sticky top-0 bg-gray-200 px-1 py-2 text-center w-24">Dlv. Date</th>
+                                    <th class="sticky top-0 bg-gray-200 px-1 py-2 text-center w-20" >Item No.</th>
+                                    <th class="sticky top-0 bg-gray-200 px-1 py-2 text-center" >Item Name</th>
+                                    <th class="sticky top-0 bg-gray-200 px-1 py-2 text-right w-24" >Qty</th>
+                                    <th class="sticky top-0 bg-gray-200 px-1 py-2 text-center w-28" >Customer No.</th>
+                                    <th class="sticky top-0 bg-gray-200 px-1 py-2 text-center" >Customer Name</th>
+                                    <th class="sticky top-0 bg-gray-200 px-1 py-2 text-center w-28" >Status</th>
                                     <th class="sticky top-0 bg-gray-200 px-1 py-2 text-center w-20" >Action</th>
                                 </tr>
                             </thead>
@@ -232,6 +232,7 @@
                                     </tr>
                                 
                                 @endforeach
+
                             </tbody>
                         </table>
                     </div>

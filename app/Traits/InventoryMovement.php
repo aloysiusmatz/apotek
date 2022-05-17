@@ -82,6 +82,42 @@ trait InventoryMovement
         // dd($ending);
     }
 
+    public function getAllEndingInvAllLocBatch($company_id){
+        $query = 
+        "select a.*, b.period, b.year, b.qty, c.name as 'location_name', d.show_id as 'item_show_id', d.name as 'item_name', d.unit as 'item_unit' FROM (
+            select ti.item_id, ti.company_id  , MAX(CONCAT(ti.`year`,LPAD(ti.period,2,0)) ) as 'max' , ti.location_id ,ti.batch
+                from t_invstock ti 
+                WHERE 
+                ti.company_id = '".$company_id."' AND
+                ti.category = 'ending'
+                GROUP BY ti.item_id , ti.company_id , ti.location_id , ti.batch) a
+        inner join t_invstock b on 
+        a.item_id = b.item_id and 
+        a.company_id = b.company_id and 
+        SUBSTRING(a.max, 5, 2) = b.period and 
+        SUBSTRING(a.max, 1, 4) = b.`year` AND 
+        a.location_id = b.location_id AND 
+        a.batch = b.batch AND
+        b.qty > 0
+        left join m_locations c on
+        a.location_id = c.id
+        inner join m_items d on
+        a.item_id = d.id
+        where b.category = 'ending'";
+
+
+        $endings = DB::select($query);
+        
+        $index=0;
+        foreach ($endings as $ending) {
+            $endings[$index] = (array) $ending;            
+            $index++;
+        }
+
+        return $endings;
+        // dd($ending);
+    }
+
     public function getMonthEndingInv($item_id, $company_id, $period , $year, $location_id, $batch){
         $ending_inv = DB::table('t_invstock')
                         ->where('item_id',$item_id)

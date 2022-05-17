@@ -107,8 +107,8 @@
                                     <th wire:click="sortBy(1)" class="sticky top-0 bg-gray-200 px-1 py-2 text-left cursor-pointer">Name</th>
                                     <th wire:click="sortBy(2)" class="sticky top-0 bg-gray-200 px-1 py-2 text-right cursor-pointer w-28" >Total Qty</th>
                                     <th wire:click="sortBy(3)" class="sticky top-0 bg-gray-200 px-1 py-2 text-left cursor-pointer w-10" >Unit</th>
-                                    <th wire:click="sortBy(4)" class="sticky top-0 bg-gray-200 px-1 py-2 text-right cursor-pointer w-28" >Total COGS</th>
-                                    <th wire:click="sortBy(5)" class="sticky top-0 bg-gray-200 px-1 py-2 text-right cursor-pointer w-24" >COGS/Qty</th>
+                                    <th wire:click="sortBy(4)" class="sticky top-0 bg-gray-200 px-1 py-2 text-right cursor-pointer w-28" >Total Value</th>
+                                    <th wire:click="sortBy(5)" class="sticky top-0 bg-gray-200 px-1 py-2 text-right cursor-pointer w-24" >Value/Qty</th>
                                    
                                 </tr>
                             </thead>
@@ -364,8 +364,8 @@
                                 <th class="text-right px-1 py-2">Qty</th>
                                 <th class="text-right px-1 py-2">Amount</th>
                                 <th class="text-right px-1 py-2">Total Qty</th>
-                                <th class="text-right px-1 py-2">Total Amount</th>
-                                <th class="text-right px-1 py-2">COGS</th>
+                                <th class="text-right px-1 py-2">Total Value</th>
+                                <th class="text-right px-1 py-2">Val/Qty</th>
                             </tr>
                         </thead>
                         <tbody>

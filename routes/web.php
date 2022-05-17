@@ -7,6 +7,7 @@ use App\Http\Controllers\UsersController;
 use App\Http\Controllers\ExportController;
 use App\Http\Controllers\VendorsController;
 use App\Http\Controllers\CompaniesController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DeveloperController;
 use App\Http\Controllers\LocationsController;
 use App\Http\Controllers\CategoriesController;
@@ -37,10 +38,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', function () {
-    return view('dashboard');
-})->name('dashboard');
-
+Route::middleware(['auth:sanctum', 'verified'])->get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 Route::middleware(['auth:sanctum', 'verified'])->get('/home', [HomeController::class, 'index']);
 Route::middleware(['auth:sanctum', 'verified'])->get('/items', [ItemsController::class, 'index'])->name('items');
 Route::middleware(['auth:sanctum', 'verified'])->get('/categories', [CategoriesController::class, 'index'])->name('categories');

@@ -15,7 +15,7 @@
             </div>
             @endif
 
-            @if ($mysubmit1=="updateData1")
+        @if ($mysubmit1=="updateData1")
                 <div>
                     <x-button-topcreate wire:click="changeToCreate1">Create Item</x-button-topcreate>
                 </div>

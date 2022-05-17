@@ -1,6 +1,6 @@
 
 
-    <button type="submit" class="{{ $myclass }}">
-        {{ $title }}
-    </button>
+<button type="submit" class="{{ $myclass ?? ''}}">
+    {{ $title }}
+</button>
    

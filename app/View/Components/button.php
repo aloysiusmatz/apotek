@@ -4,7 +4,7 @@ namespace App\View\Components;
 
 use Illuminate\View\Component;
 
-class button extends Component
+class Button extends Component
 {
     /**
      * Create a new component instance.
@@ -18,7 +18,7 @@ class button extends Component
 
     public function __construct($type)
     {
-        dd('test');
+        
         $myclass = "px-3 py-2 rounded-md text-white font-semibold text-xs font-bold";
         
         if ($type == "create"){

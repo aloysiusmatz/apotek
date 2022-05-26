@@ -317,7 +317,14 @@ class PurchaseorderView extends Component
             }
             
             //PO HEADER
-            $select_show_id = "select ifnull(max(po_show_id),3000000)+1 as id from t_po_h where company_id='".session()->get('company_id')."' for share";
+            // $select_show_id = "select ifnull(max(po_show_id),3000000)+1 as id from t_po_h where company_id='".session()->get('company_id')." for update";
+
+            $select_show_id = DB::table('t_po_h')
+                                ->select(DB::raw('ifnull(max(po_show_id),3000000)+1 as "po_show_id"'))
+                                ->where('company_id', session()->get('company_id'))
+                                ->sharedLock()
+                                ->get();
+            // dd($select_show_id[0]->po_show_id);
 
             $show_id = DB::select($select_show_id)[0]->id;
             

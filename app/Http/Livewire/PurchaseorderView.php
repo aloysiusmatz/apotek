@@ -326,7 +326,7 @@ class PurchaseorderView extends Component
                                 ->get();
             // dd($select_show_id[0]->po_show_id);
 
-            $show_id = DB::select($select_show_id)[0]->id;
+            $show_id = $select_show_id[0]->po_show_id;
             
             $t_po_h = t_po_h::create([
                 'company_id' => session()->get('company_id'),

@@ -236,7 +236,7 @@ class SalesorderView extends Component
                 'alt_phone1' => '',
                 'alt_phone2' => ''
             ]);
-            $customer_id = $m_customer->id;
+            $customer_id = $m_customers->id;
         }else{
             // dd($customer);
             $customer_id = $customer[0]->id;

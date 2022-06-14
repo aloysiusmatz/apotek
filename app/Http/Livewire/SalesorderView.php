@@ -216,7 +216,7 @@ class SalesorderView extends Component
                                 ->sharedLock()
                                 ->get();
 
-        $show_id = DB::select($select_show_id)[0]->id;
+        $show_id = $select_show_id[0]->id;
 
         $select_customer = "select * from m_customers where company_id='".session()->get('company_id')."' and show_id='".$this->customer_id."' ";
         $customer = DB::select($select_customer);

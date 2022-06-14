@@ -256,19 +256,36 @@ class PurchaseorderlistView extends Component
         $this->modal1_title = 'PO-'.$po_show_id;
         $this->modal1_po = $po_number;
 
-        $query = "
-        select a.*, c.show_id as 'item_show_id' , c.name as 'item_name', c.unit as 'item_unit', IFNULL(sum(d.qty),0) as 'receipt_qty'
-        from t_po_d a
-        LEFT JOIN t_itmove_d d on a.id = d.po_id and a.item_sequence = d.po_item_sequence 
-        LEFT JOIN t_po_h b on a.id = b.id
-        LEFT JOIN m_items c on a.item_id = c.id
-        where a.final_delivery = 0 and
-        b.company_id ='".session()->get('company_id')."' and 
-        a.id = '".$po_number."'
-        group by a.id, a.item_sequence
-        ";
-        $datas = DB::select($query);
-        
+        // $query = "
+        // select a.*, c.show_id as 'item_show_id' , c.name as 'item_name', c.unit as 'item_unit', IFNULL(sum(d.qty),0) as 'receipt_qty'
+        // from t_po_d a
+        // LEFT JOIN t_itmove_d d on a.id = d.po_id and a.item_sequence = d.po_item_sequence 
+        // LEFT JOIN t_po_h b on a.id = b.id
+        // LEFT JOIN m_items c on a.item_id = c.id
+        // where a.final_delivery = 0 and
+        // b.company_id ='".session()->get('company_id')."' and 
+        // a.id = '".$po_number."'
+        // group by a.id, a.item_sequence
+        // ";
+        // $datas = DB::select($query);
+        // dd($datas);
+
+        $datas = DB::table('t_po_d as a')
+                    ->leftJoin('t_itmove_d as d', function($join){
+                        $join->on('a.id', 'd.po_id')
+                             ->on('a.item_sequence', 'd.po_item_sequence');
+                    })
+                    ->leftJoin('t_po_h as b', 'a.id', 'b.id')
+                    ->leftJoin('m_items as c', 'a.item_id', 'c.id')
+                    ->where('a.final_delivery', 0)
+                    ->where('b.company_id', session()->get('company_id'))
+                    ->where('a.id', $po_number)
+                    ->select(DB::raw("a.*, c.show_id as 'item_show_id' , c.name as 'item_name', c.unit as 'item_unit', IFNULL(sum(d.qty),0) as 'receipt_qty'"))
+                    ->groupBy('a.id','a.item_sequence')
+                    ->get();
+
+        dd($datas);
+
         $modal1_datas = [];
         $index=0;
         foreach ($datas as $data) {

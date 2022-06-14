@@ -208,7 +208,14 @@ class SalesorderView extends Component
         //write to database
         DB::beginTransaction();
 
-        $select_show_id = "select ifnull(max(so_show_id),4000000)+1 as id from t_so_h where company_id='".session()->get('company_id')."' for share";
+        // $select_show_id = "select ifnull(max(so_show_id),4000000)+1 as id from t_so_h where company_id='".session()->get('company_id')."' for share";
+        
+        $select_show_id = DB::table('t_so_h')
+                                ->select(DB::raw('ifnull(max(so_show_id),4000000)+1 as id'))
+                                ->where('company_id', session()->get('company_id'))
+                                ->sharedLock()
+                                ->get();
+
         $show_id = DB::select($select_show_id)[0]->id;
 
         $select_customer = "select * from m_customers where company_id='".session()->get('company_id')."' and show_id='".$this->customer_id."' ";

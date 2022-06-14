@@ -345,7 +345,7 @@ trait InventoryMovement
         //DO show ID
         // $select_show_id = "select ifnull(max(do_show_id),5000000)+1 as id from t_do_h where company_id='".session()->get('company_id')."' for share";
         $select_show_id = DB::table('t_do_h')
-                                ->select(DB::raw('ifnull(max(do_show_id),5000000)+1 as id from t_do_h'))
+                                ->select(DB::raw('ifnull(max(do_show_id),5000000)+1 as id'))
                                 ->where('company_id', session()->get('company_id'))
                                 ->sharedLock()
                                 ->get();

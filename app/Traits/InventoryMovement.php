@@ -343,8 +343,13 @@ trait InventoryMovement
     private function postDOTable($p_so_number, $p_do_header, $p_company_id, $p_so_item, $p_so_item_details){
 
         //DO show ID
-        $select_show_id = "select ifnull(max(do_show_id),5000000)+1 as id from t_do_h where company_id='".session()->get('company_id')."' for share";
-        $show_id = DB::select($select_show_id)[0]->id;
+        // $select_show_id = "select ifnull(max(do_show_id),5000000)+1 as id from t_do_h where company_id='".session()->get('company_id')."' for share";
+        $select_show_id = DB::table('t_do_h')
+                                ->select(DB::raw('ifnull(max(do_show_id),5000000)+1 as id from t_do_h'))
+                                ->where('company_id', session()->get('company_id'))
+                                ->sharedLock()
+                                ->get();
+        $show_id = $select_show_id[0]->id;
 
         //record DO header
         $t_do_h = t_do_h::create([

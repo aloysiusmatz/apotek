@@ -243,9 +243,13 @@ class SalesorderlistView extends Component
 
             $latest_stock[$index] = $this->getEndingInvAllLocBatch($data->item_id , session()->get('company_id'));
             // dd($latest_stock[$index][0]['location_id']);
-            $location_id = $latest_stock[$index][0]['location_id'];
-            $batch = $latest_stock[$index][0]['batch'];
-
+            foreach ($latest_stock[$index] as $temp_latest_stock) {
+                if($temp_latest_stock['qty']>0){
+                    $location_id = $temp_latest_stock['location_id'];
+                    $batch = $temp_latest_stock['batch'];
+                    break;
+                }
+            }
             $this->soitem_locbatch[$index][0] = $location_id.'-'.$batch;
             $index++;
         }
@@ -265,8 +269,15 @@ class SalesorderlistView extends Component
         // dd($count_subitem);
         $this->soitem_qty[$index][$count_subitem] = 0;
 
-        $location_id = $this->latest_stock[$index][0]['location_id'];
-        $batch = $this->latest_stock[$index][0]['batch'];
+        foreach ($latest_stock[$index] as $temp_latest_stock) {
+            if($temp_latest_stock['qty']>0){
+                $location_id = $temp_latest_stock['location_id'];
+                $batch = $temp_latest_stock['batch'];
+                break;
+            }
+        }
+        // $location_id = $this->latest_stock[$index][0]['location_id'];
+        // $batch = $this->latest_stock[$index][0]['batch'];
 
         // $this->soitem_locbatch[$item_sequence][$count_subitem]['location_id'] = $location_id;
         // $this->soitem_locbatch[$item_sequence][$count_subitem]['batch'] = $batch;
